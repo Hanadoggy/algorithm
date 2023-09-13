@@ -51,7 +51,7 @@ public class Level2 {
             count += (height - y + 1);
         }
 
-        return count;
+        return count * 4; // 오타 수정
     }
 
     private static int[] partition(int[] sequence, int k) {
@@ -122,6 +122,5 @@ public class Level2 {
             this.playtime = playtime;
         }
     }
-    
 }
 
