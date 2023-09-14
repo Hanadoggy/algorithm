@@ -4,7 +4,9 @@ import java.util.*;
 
 public class Level1 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RuntimeException {
+
+
 
     }
 
@@ -197,13 +199,13 @@ public class Level1 {
     }
 
     private static Integer[] personalInformation(String today, String[] terms, String[] privacies) {
+
         // every month has 28 days
         final int TOTALDAYS = 28 * 12;
         Map<String, Integer> termMap = new HashMap<>();
         List<Integer> answer = new ArrayList<>();
         int thisDays = ((Integer.parseInt(today.substring(0, 4)) - 2000) * TOTALDAYS) +
                 (Integer.parseInt(today.substring(5, 7)) * 28) + Integer.parseInt(today.substring(8));
-
         for (String term : terms) {
             String[] split = term.split(" ");
             termMap.put(split[0], Integer.parseInt(split[1]));
@@ -323,6 +325,82 @@ public class Level1 {
                 answer += count[i];
             }
         }
+
+        return answer;
+    }
+
+    private static int fruitDealer(int k, int m, int[] score) {
+
+        int answer = 0;
+        int count = m;
+        int[] counts = new int[k + 1];
+        Arrays.stream(score).forEach(i -> counts[i]++);
+
+
+        for (int i = k; i > 0; i--) {
+            if (counts[i] >= count) {
+                counts[i] -= count;
+                answer += (m * i++);
+                count = m;
+            } else {
+                count -= counts[i];
+                counts[i] = 0;
+            }
+        }
+
+        return answer;
+    }
+
+    private static String foodFight(int[] food) {
+
+        StringBuilder answer = new StringBuilder();
+        for (int i = 1; i < food.length; i++) {
+            String add = String.format("%d", i).repeat(food[i] / 2);
+            answer.append(add);
+        }
+        answer.append("0");
+        for (int i = food.length - 1; i > 0; i--) {
+            String add = String.format("%d", i).repeat(food[i] / 2);
+            answer.append(add);
+        }
+
+        return answer.toString();
+    }
+
+    private static int makeHamburger(int[] ingredient) {
+
+        int answer = 0;
+        Stack<Integer> stack = new Stack<>(); // 제대로 쌓인 버거들의 최상위 재료
+
+        for (int i : ingredient) {
+            if (i == 1) {
+                if (!stack.isEmpty() && stack.peek() == 3) {
+                    answer++;
+                    stack.pop();
+                } else {
+                    stack.push(1);
+                }
+            } else if (i == 2) {
+                if (!stack.isEmpty() && stack.peek() == 1) {
+                    stack.pop();
+                    stack.push(2);
+                } else {
+                    stack.clear();
+                }
+            } else {
+                if (!stack.isEmpty() && stack.peek() == 2) {
+                    stack.pop();
+                    stack.push(3);
+                } else {
+                    stack.clear();
+                }
+            }
+        }
+
+        /**
+         * 동일한 크기의 배열에 저장하면서 인덱스만 움직이며 확인하는 방식으로도 가능
+         * ex) 버거를 완성하면 포인터를 뒤로 미뤄서 계속 탐색
+         */
 
         return answer;
     }
