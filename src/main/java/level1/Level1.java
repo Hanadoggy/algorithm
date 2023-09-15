@@ -7,7 +7,83 @@ public class Level1 {
     public static void main(String[] args) throws RuntimeException {
 
 
+//        System.out.println(babbling(new String[]{"aya", "yee", "u", "maa"}));
+//        System.out.println(babbling(new String[]{"ayaye", "uuu", "yeye", "yemawoo", "ayaayaa"}));
+//        System.out.println(emptyCola(3, 1, 20));
+        System.out.println(threeGuys(new int[]{-2, 3, 0, 2, -5}));
 
+    }
+
+    private static int threeGuys(int[] number) {
+
+        int answer = 0;
+
+        for (int i = 0; i < number.length; i++) {
+            for (int j = i + 1; j < number.length; j++) {
+                for (int k = j + 1; k < number.length; k++) {
+                    if (number[i] + number[j] + number[k] == 0) {
+                        answer++;
+                    }
+                }
+            }
+        }
+
+        return answer;
+    }
+
+    private static int emptyCola(int a, int b, int n) {
+
+        int answer = 0;
+        while (n >= a) {
+            answer += (n / a) * b;
+            n = (n / a) * b + (n % a);
+        }
+
+        return answer;
+    }
+
+    private static int babbling(String[] babbling) {
+
+        boolean flag;
+        char before;
+        int answer = 0;
+
+        for (String speak : babbling) {
+            flag = true;
+            before = 'z';
+            for (int i = 0; i < speak.length() && flag; i++) {
+                if (i + 2 < speak.length() && speak.charAt(i) == 'a' && speak.charAt(i) != before) {
+                    flag = speak.charAt(i + 1) == 'y' && speak.charAt(i + 2) == 'a';
+                    i += 2;
+                    before = 'a';
+                } else if (i + 1 < speak.length() && speak.charAt(i) == 'y' && speak.charAt(i) != before) {
+                    flag = speak.charAt(i + 1) == 'e';
+                    i++;
+                    before = 'y';
+                } else if (i + 2 < speak.length() && speak.charAt(i) == 'w' && speak.charAt(i) != before) {
+                    flag = speak.charAt(i + 1) == 'o' && speak.charAt(i + 2) == 'o';
+                    i += 2;
+                    before = 'w';
+                } else if (i + 1 < speak.length() && speak.charAt(i) == 'm' && speak.charAt(i) != before) {
+                    flag = speak.charAt(i + 1) == 'a';
+                    i++;
+                    before = 'm';
+                } else {
+                    flag = false;
+                }
+            }
+
+            if (flag) {
+                answer++;
+            }
+        }
+
+        /**
+         * 포함되는 단어들을 공백으로 치환하여 단어의 길이를 세서 공백만 존재할 때 = 발음이 가능한 단어만 존재할 때
+         * 위 경우를 세는 방법으로 최적화 가능
+         */
+
+        return answer;
     }
 
     private static String[] RunningRace(String[] players, String[] callings) {
