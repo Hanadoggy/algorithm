@@ -6,11 +6,7 @@ public class Level1 {
 
     public static void main(String[] args) throws RuntimeException {
 
-
-//        System.out.println(babbling(new String[]{"aya", "yee", "u", "maa"}));
-//        System.out.println(babbling(new String[]{"ayaye", "uuu", "yeye", "yemawoo", "ayaayaa"}));
-//        System.out.println(emptyCola(3, 1, 20));
-        System.out.println(threeGuys(new int[]{-2, 3, 0, 2, -5}));
+        // level 1
 
     }
 

@@ -8,7 +8,226 @@ public class Level2 {
 
     public static void main(String[] args) {
 
+        // level 2
 
+    }
+
+    private static int[] sellEmoticons(int[][] users, int[] emoticons) {
+
+        int len = emoticons.length;
+        int[][] discountPrices = new int[len][4];
+        int[] index = new int[len];
+        int maxSubs = 0;
+        int maxSell = 0;
+
+        for (int[] user : users) {
+            user[0] = (user[0] / 10) - ((user[0] % 10 > 0) ? 0 : 1);
+        }
+
+        for (int i = 0; i < len; i++) {
+            discountPrices[i][0] = (emoticons[i] / 10) * 9;
+            discountPrices[i][1] = (emoticons[i] / 10) * 8;
+            discountPrices[i][2] = (emoticons[i] / 10) * 7;
+            discountPrices[i][3] = (emoticons[i] / 10) * 6;
+        }
+
+        for (int i = 0; i < Math.pow(4, len); i++) { // 0000000 ~ 3333333
+            int subs = 0;
+            int sell = 0;
+            int[] levelSum = new int[4]; // 할인폭 이모티콘 가격 합
+            for (int j = 0; j < len; j++) { // j번째 이모티콘의 할인가를 할인 레벨의 가격 합에 추가
+                levelSum[index[j]] += discountPrices[j][index[j]];
+            }
+
+            for (int[] user : users) { // 사람 별 구매, 구독 결정
+                int sum = levelSum[3];
+                if (user[0] <= 2) sum += levelSum[2];
+                if (user[0] <= 1) sum += levelSum[1];
+                if (user[0] == 0) sum += levelSum[0];
+                if (sum >= user[1]) {
+                    subs++;
+                } else {
+                    sell += sum;
+                }
+            }
+
+            if (subs > maxSubs) {
+                maxSubs = subs;
+                maxSell = sell;
+            } else if (subs == maxSubs && sell > maxSell) {
+                maxSell = sell;
+            }
+
+            index[0]++;
+            if (index[0] == 4) {
+                index[0] = 0;
+                index[1]++;
+                for (int j = 1; j < len; j++) {
+                    if (index[j] == 4 && j < len - 1) {
+                        index[j] = 0;
+                        index[j + 1]++;
+                    }
+                }
+            }
+        }
+
+        return new int[]{maxSubs, maxSell};
+    }
+
+    private static long seesaw(int[] weights) {
+
+        long answer = 0;
+        int[] people = new int[2002];
+
+        for (int weight : weights) {
+            people[weight]++;
+        }
+
+        for (int i = 100; i < 1001; i++) {
+            long count = people[i];
+            if (count != 0) {
+                answer += ((count * (count - 1)) / 2);
+                if (i % 2 == 0 && people[(i / 2) * 3] != 0) {
+                    answer += (people[(i / 2) * 3] * count);
+                }
+                if (people[i * 2] != 0) {
+                    answer += (people[i * 2] * count);
+                }
+                if (i % 3 == 0 && people[(i / 3) * 4] != 0) {
+                    answer += (people[(i / 3) * 4] * count);
+                }
+            }
+        }
+
+        return answer;
+    }
+
+    private static int changeNumber(int x, int y, int n) {
+
+        Queue<Integer> queue = new LinkedList<>();
+        int[] answer = new int[1000001];
+        queue.add(x);
+
+        if (x == y) return 0;
+
+        while (!queue.isEmpty()) {
+            x = queue.poll();
+            if (x + n == y || x * 2 == y || x * 3 == y) {
+                return answer[x] + 1;
+            } else {
+                if (x + n < y && answer[x + n] == 0) {
+                    queue.add(x + n);
+                    answer[x + n] = answer[x] + 1;
+                }
+                if (x * 2 < y && answer[x * 2] == 0) {
+                    queue.add(x * 2);
+                    answer[x * 2] = answer[x] + 1;
+                }
+                if (x * 3 < y && answer[x * 3] == 0) {
+                    queue.add(x * 3);
+                    answer[x * 3] = answer[x] + 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private static int[] backBigInt(int[] numbers) {
+
+        int lastMax = 0;
+        Stack<Integer> stack = new Stack<>();
+        int[] answer = new int[numbers.length];
+        for (int i = numbers.length - 1; i >= 0; i--) {
+            if (numbers[i] >= lastMax) {
+                answer[i] = -1;
+                stack.clear();
+                stack.push(numbers[i]);
+                lastMax = numbers[i];
+            } else {
+                if (numbers[i] < stack.peek()) {
+                    answer[i] = stack.peek();
+                    stack.push(numbers[i]);
+                } else if (numbers[i] == stack.peek()) {
+                    stack.pop();
+                    answer[i] = stack.peek();
+                    stack.push(numbers[i]);
+                } else {
+                    while (numbers[i] >= stack.peek()) {
+                        stack.pop();
+                    }
+                    answer[i] = stack.peek();
+                    stack.push(numbers[i]);
+                }
+            }
+        }
+
+        return answer;
+    }
+
+    private static int[] desertIsland(String[] maps) {
+
+        int rows = maps.length;
+        int cols = maps[0].length();
+
+        int[][] stage = new int[rows][cols];
+        boolean[][] visited = new boolean[rows][cols];
+        List<Integer> answer = new ArrayList<>();
+        Stack<Point> stack = new Stack<>();
+        int[] dr = new int[]{0, 1, 0, -1};
+        int[] dc = new int[]{1, 0, -1, 0};
+        int sum = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (maps[i].charAt(j) != 'X') stage[i][j] = Integer.parseInt(maps[i].substring(j, j + 1));
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sum = 0;
+                if (stage[i][j] > 0 && !visited[i][j]) {
+                    sum += stage[i][j];
+                    stack.push(new Point(i, j));
+                    visited[i][j] = true;
+                    while (!stack.isEmpty()) {
+                        Point cur = stack.pop();
+                        for (int k = 0; k < 4; k++) {
+                            if (stage[cur.r + dr[k]][cur.c + dc[k]] > 0 && !visited[cur.r + dr[k]][cur.c + dc[k]]) {
+                                stack.push(new Point(cur.r + dr[k], cur.c + dc[k]));
+                                visited[cur.r + dr[k]][cur.c + dc[k]] = true;
+                                sum += stage[cur.r + dr[k]][cur.c + dc[k]];
+                            }
+                        }
+                    }
+                }
+                if (sum != 0) answer.add(sum);
+            }
+        }
+
+        answer.sort(null);
+
+        return answer.stream().mapToInt(i -> i).toArray();
+    }
+
+    private static int hotel(String[][] book_time) {
+
+        PriorityQueue<Integer> roomEndTime = new PriorityQueue<>();
+        List<Room> transform = new ArrayList<>();
+
+        for (String[] book : book_time) {
+            transform.add(new Room(Integer.parseInt(book[0].substring(0, 2)) * 60 + Integer.parseInt(book[0].substring(3)),
+                    Integer.parseInt(book[1].substring(0, 2)) * 60 + Integer.parseInt(book[1].substring(3)) + 10));
+        }
+
+        transform.sort(Comparator.comparingInt(o -> o.start));
+        transform.forEach(r -> {
+            if (!roomEndTime.isEmpty() && roomEndTime.peek() <= r.start) roomEndTime.poll();
+            roomEndTime.add(r.end);
+        });
+
+        return roomEndTime.size();
     }
 
     private static int escape(String[] maps) {
@@ -181,18 +400,6 @@ public class Level2 {
         return -1;
     }
 
-    static class Point {
-        int r;
-        int c;
-
-        public Point() {}
-
-        public Point(int r, int c) {
-            this.r = r;
-            this.c = c;
-        }
-    }
-
     private static int mining(int[] picks, String[] minerals) {
         // 풀이 참조, 그리디
         // 광물의 티어가 5묶음 마다 상위티어와 동일 -> 5묶음에서 고티어의 돌이 많은 순 대로 좋은 곡괭이 사용해야 함
@@ -352,6 +559,27 @@ public class Level2 {
             this.name = name;
             this.start = start;
             this.playtime = playtime;
+        }
+    }
+
+    static class Point {
+        int r;
+        int c;
+
+        public Point() {}
+
+        public Point(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+    }
+
+    static class Room {
+        int start;
+        int end;
+        public Room(int start, int end) {
+            this.start = start;
+            this.end = end;
         }
     }
 }
