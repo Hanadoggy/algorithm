@@ -9,7 +9,49 @@ public class Level2 {
     public static void main(String[] args) {
 
         // level 2
+        // 재귀, DP 위주로
+        System.out.println(cantor(2, 15, 15));
+    }
 
+    private static int cantor(int n, int l, int r) {
+        return calc(n, r, 0) - calc(n, l - 1, 0);
+    }
+
+    private static int calc(int n, long index, int sum) {
+        if (n == 1) {
+            if (index < 3) sum += (int) index;
+            if (index >= 3) sum += (int) (index - 1);
+            return sum;
+        } else {
+            long multi = index / (long) Math.pow(5, n-1);
+            if (multi < 2) sum += (int) (Math.pow(4, n-1) * multi);
+            if (multi > 2) sum += (int) (Math.pow(4, n-1) * (multi - 1));
+            if (multi == 2) return sum + (int) (Math.pow(4, n-1) * 2);
+            if ((index % (long) Math.pow(5, n-1)) == 0) return sum;
+            return calc(n - 1, (index % (long) Math.pow(5, n-1)), sum);
+        }
+    }
+
+    private static int magicElevator(int storey) {
+
+        int answer = 0;
+        int before = 0;
+        String number = Integer.toString(storey);
+        for (int i = number.length() - 1; i >= 0; i--) {
+            int num = Character.getNumericValue(number.charAt(i));
+            if (before == 5) {
+                answer += 5;
+                before = (num < 5) ? num : num + 1;
+            } else if (before < 5) {
+                answer += before;
+                before = num;
+            } else {
+                answer += (10 - before);
+                before = num + 1;
+            }
+        }
+
+        return answer + ((before > 5) ? (10 - before) + 1 : before);
     }
 
     private static int[] sellEmoticons(int[][] users, int[] emoticons) {
