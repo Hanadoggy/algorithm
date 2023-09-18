@@ -10,7 +10,98 @@ public class Level2 {
 
         // level 2
         // 재귀, DP 위주로
-        System.out.println(cantor(2, 15, 15));
+
+    }
+
+    private static int selectOrange(int k, int[] tangerine) {
+
+        Arrays.sort(tangerine);
+        int len = tangerine.length;
+        List<Integer> counts = new ArrayList<>();
+
+        if (tangerine.length == 1) return 1;
+        for (int i = 1, before = 0; i < len; i++) {
+            if (i == len - 1) {
+                if (tangerine[len - 1] != tangerine[len - 2]) {
+                    counts.add(len - 1 - before);
+                    counts.add(1);
+                } else {
+                    counts.add(len - before);
+                }
+            } else if (tangerine[i - 1] != tangerine[i]) {
+                counts.add(i - before);
+                before = i;
+            }
+        }
+
+        counts.sort(Comparator.reverseOrder());
+        for (int i = 0; i < counts.size(); i++) {
+            if (k <= counts.get(i)) {
+                return i + 1;
+            }
+            k -= counts.get(i);
+        }
+
+        return counts.size();
+    }
+
+    private static long pickDots(int k, int d) {
+
+        long answer = 0;
+        for (int x = 0; x <= d; x += k) {
+            int y = (int) Math.floor(Math.sqrt(Math.pow(d, 2) - Math.pow(x, 2)));
+            answer += (y / k) + 1;
+        }
+
+        return answer;
+    }
+
+    private static int defenseGame(int n, int k, int[] enemy) {
+
+        int index = 0;
+        TreeMap<Integer, Integer> stack = new TreeMap<>(); // deleted from k
+
+        for (int damage : enemy) {
+            if (k > 0) {
+                stack.put(damage, (stack.containsKey(damage)) ? (stack.get(damage) + 1) : 1);
+                k--;
+            } else if (stack.firstKey() < damage && stack.firstKey() <= n) {
+                int min = stack.firstKey();
+                if (stack.get(min) == 1) {
+                    stack.remove(min);
+                    stack.put(damage, 1);
+                } else {
+                    stack.put(min, (stack.get(min) - 1));
+                }
+                n -= min;
+            } else if (n >= damage) {
+                n -= damage;
+            } else {
+                return index;
+            }
+            index++;
+        }
+
+        return index;
+    }
+
+    private static int tableHash(int[][] data, int col, int row_begin, int row_end) {
+
+        int answer = 0;
+        int len = data[0].length;
+        List<int[]> transform = new ArrayList<>(List.of(data));
+        transform.sort(Comparator.comparingInt((int[] o) -> o[col - 1])
+                .thenComparingInt(o -> -o[0]));
+
+        for (int i = row_begin - 1; i < row_end; i++) {
+            int cur = 0;
+            for (int j = 0; j < len; j++) {
+                cur += (transform.get(i)[j] % (i + 1));
+            }
+            answer = (i == row_begin - 1) ? cur : answer ^ cur;
+        }
+
+        return answer;
     }
 
     private static int cantor(int n, int l, int r) {
