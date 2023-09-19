@@ -13,6 +13,68 @@ public class Level2 {
 
     }
 
+    private static double[] solution(int k, int[][] ranges) {
+
+        double[] answer = new double[ranges.length];
+        List<Double> stack = new ArrayList<>();
+        while (k > 1) {
+            if (k % 2 == 0) {
+                stack.add((double) 3 * k / 4);
+                k /= 2;
+            } else {
+                stack.add(((double) (4 * k) + 1) / 2);
+                k = (3 * k) + 1;
+            }
+        }
+
+        for (int j = 0; j < ranges.length; j++) {
+            if (ranges[j][0] < ranges[j][1] + stack.size()) {
+                for (int i = ranges[j][0]; i < (stack.size() + ranges[j][1]); i++) {
+                    answer[j] += stack.get(i);
+                }
+            } else if (ranges[j][0] > ranges[j][1] + stack.size()){
+                answer[j] = -1;
+            }
+        }
+
+        return answer;
+    }
+
+    private static int splitNumberCards(int[] arrayA, int[] arrayB) {
+
+        TreeSet<Integer> setB = new TreeSet<Integer>();
+        TreeSet<Integer> setA = new TreeSet<Integer>();
+        List<Integer> stack = new ArrayList<>();
+
+        Arrays.stream(arrayA).forEach(setA::add);
+        Arrays.stream(arrayB).forEach(setB::add);
+
+        int gcdA = setA.first();
+        for (Integer i : setA) {
+            gcdA = findGCD(i, gcdA);
+        }
+
+        int gcdB = setB.first();
+        for (Integer i : setB) {
+            gcdB = findGCD(i, gcdB);
+            if (gcdA != 0 && i % gcdA == 0) gcdA = 0;
+        }
+
+        for (Integer i : setA) {
+            if (gcdB != 0 && i % gcdB == 0) gcdB = 0;
+        }
+
+        return Math.max(gcdA, gcdB);
+    }
+
+    private static int findGCD(int a, int b) {
+        if (b == 0) {
+            return a;
+        } else {
+            return findGCD(b, a % b);
+        }
+    }
+
     private static int selectOrange(int k, int[] tangerine) {
 
         Arrays.sort(tangerine);
