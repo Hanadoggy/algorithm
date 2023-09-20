@@ -1,6 +1,7 @@
 package level2;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
 
@@ -13,7 +14,109 @@ public class Level2 {
 
     }
 
-    private static double[] solution(int k, int[][] ranges) {
+    private static int playAlone(int[] cards) {
+
+        int len = cards.length;
+        int[] check = new int[len];
+
+        for (int start = 0; start < len; start++) {
+            int idx = start;
+            int sum = 0;
+            while (check[idx] > -1) {
+                if (check[idx] == 0) {
+                    check[idx] = -1;
+                    sum++;
+                } else if (idx != start) {
+                    sum += check[idx];
+                    check[idx] = -1;
+                    break;
+                } else {
+                    break;
+                }
+                idx = cards[idx] - 1;
+            }
+            check[idx] = sum;
+        }
+
+        Arrays.sort(check);
+
+        return (check[len - 2] < 1) ? 0 : (check[len - 2] * check[len - 1]);
+    }
+
+    private static int circleSum(int[] elements) {
+        // set 사용하기
+        boolean[] check = new boolean[1000001];
+        int answer = 0;
+        int fullLen = elements.length;
+
+        for (int len = 1, sum = 0, counts = 0; len < fullLen; len++, sum = 0, counts = 0) {
+            for (int i = 0; i < len; i++) {
+                sum += elements[i];
+            }
+
+            for (int idx = 0; idx < fullLen; idx++) {
+                sum += (elements[(idx + len) % fullLen] - elements[idx % fullLen]);
+                if (!check[sum]) {
+                    counts++;
+                    check[sum] = true;
+                }
+            }
+            answer += counts;
+        }
+
+        return answer + 1;
+    }
+
+    private static int deliveryBox(int[] order) {
+
+        boolean[] check = new boolean[order.length + 1];
+        int before = 0;
+        int answer = 0;
+
+        for (int box : order) {
+            if (box + 1 < before) {
+                for (int i = before - 1; i > box; i--) {
+                    if (!check[i]) return answer;
+                }
+            }
+            check[box] = true;
+            before = box;
+            answer++;
+        }
+
+
+        return answer;
+    }
+
+    private static int cutRollcake(int[] topping) {
+
+        int[][] types = new int[10001][2];
+        int answer = 0;
+        int big = 0;
+        int little = 0;
+
+        for (int i = 0; i < topping.length; i++) {
+            if (types[topping[i]][1]++ == 0) {
+                little++;
+            }
+        }
+
+        for (int i = 0; i < topping.length - 1; i++) {
+            if (types[topping[i]][0]++ == 0) {
+                big++;
+            }
+            if (--types[topping[i]][1] == 0) {
+                little--;
+            }
+            if (big == little) {
+                answer++;
+            }
+        }
+
+        return answer;
+    }
+
+    private static double[] collatzIntegration(int k, int[][] ranges) {
 
         double[] answer = new double[ranges.length];
         List<Double> stack = new ArrayList<>();
