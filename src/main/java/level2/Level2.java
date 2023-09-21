@@ -14,6 +14,76 @@ public class Level2 {
 
     }
 
+    private static int makeTwoQueueSame(int[] queue1, int[] queue2) {
+
+        int len = queue1.length;
+        long[] list = new long[len * 2];
+        long sum1 = 0;
+        long sum2 = 0;
+        long target = 0;
+        int idxS = 0;
+        int idxE = len;
+        int answer = 0;
+
+        for (int i = 0; i < len; i++) {
+            list[i] = (long) queue1[i];
+            list[i + len] = (long) queue2[i];
+            sum1 += (long) queue1[i];
+            sum2 += (long) queue2[i];
+        }
+
+        if ((sum1 + sum2) % 2 == 1) return -1;
+        target = (sum1 + sum2) / 2;
+
+        while (sum1 != target) {
+            if (sum1 > target) {
+                sum1 -= list[idxS++ % (2 * len)];
+                answer++;
+            } else {
+                sum1 += list[idxE++ % (2 * len)];
+                answer++;
+            }
+            if (sum1 != target && (idxS == 2 * len || idxE == 3 * len)) return -1;
+        }
+
+        return answer;
+    }
+
+    private static int discountEvent(String[] want, int[] number, String[] discount) {
+
+        int answer = 0;
+        int days = 0;
+        int len = want.length;
+        boolean flag = true;
+        Map<String, Integer> transform = new HashMap<>();
+        int[] counts = new int[len + 1];
+
+        for (int i = 0; i < len; i++) {
+            transform.put(want[i], i);
+            days += number[i];
+        }
+        for (int i = 0; i < days; i++) {
+            counts[transform.getOrDefault(discount[i], len)]++;
+        }
+
+        for (int i = days; i < discount.length; i++) {
+            flag = true;
+            for (int j = 0; j < len && flag; j++) {
+                if (counts[j] != number[j]) flag = false;
+            }
+            if (flag) answer++;
+            counts[transform.getOrDefault(discount[i], len)]++;
+            counts[transform.getOrDefault(discount[i - days], len)]--;
+        }
+        flag = true;
+        for (int j = 0; j < len && flag; j++) {
+            if (counts[j] != number[j]) flag = false;
+        }
+        if (flag) answer++; // 마지막 횟수 카운트
+
+        return answer;
+    }
+
     private static int playAlone(int[] cards) {
 
         int len = cards.length;

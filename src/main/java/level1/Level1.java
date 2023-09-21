@@ -10,6 +10,31 @@ public class Level1 {
 
     }
 
+    private static String numberFriend(String X, String Y) {
+
+        int[] countA = new int[10];
+        int[] countB = new int[10];
+        StringBuilder answer = new StringBuilder();
+
+        for (int i = 0; i < X.length(); i++) {
+            countA[Character.getNumericValue(X.charAt(i))]++;
+        }
+        for (int i = 0; i < Y.length(); i++) {
+            countB[Character.getNumericValue(Y.charAt(i))]++;
+        }
+        for (int i = 9; i >= 0; i--) {
+            while (countA[i] > 0 && countB[i] > 0) {
+                answer.append(i);
+                countA[i]--;
+                countB[i]--;
+                if (i == 0 && answer.length() == 1) break;
+            }
+
+        }
+
+        return (answer.length() == 0) ? "-1" : answer.toString();
+    }
+
     private static int threeGuys(int[] number) {
 
         int answer = 0;
