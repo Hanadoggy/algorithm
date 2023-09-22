@@ -14,6 +14,91 @@ public class Level2 {
 
     }
 
+    private static int[] calculateParkingFee(int[] fees, String[] records) {
+        // 너무 지저분한듯, 더 나은 방법??
+        Map<Integer, Integer> in = new HashMap<>();
+        Map<Integer, Integer> out = new HashMap<>();
+        List<Integer> answer = new ArrayList<>();
+
+        for (String record : records) {
+            int time = Integer.parseInt(record.substring(0, 2)) * 60 + Integer.parseInt(record.substring(3, 5));
+            int car = Integer.parseInt(record.substring(6, 10));
+            if (record.substring(11).equals("IN")) {
+                if (in.containsKey(car)) {
+                    in.put(car, time - out.get(car) + in.get(car));
+                    out.remove(car);
+                } else {
+                    in.put(car, time);
+                }
+            } else {
+                out.put(car, time);
+            }
+        }
+
+        int[] cars = in.keySet().stream().sorted().mapToInt(i -> i).toArray();
+        for (int car : cars) {
+            int start = in.get(car);
+            int time = out.getOrDefault(car, (23 * 60) + 59) - start - fees[0];
+            int price = fees[1] +
+                    ((time <= 0) ?  0 :
+                            ((time % fees[2] == 0) ? (time / fees[2]) : ((time / fees[2]) + 1)) * fees[3]);
+            answer.add(price);
+        }
+
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    private static int[] archery(int n, int[] info) {
+
+        int[] answer = new int[11];
+        int[] place = new int[11];
+        int max = 0;
+        int enemyScore = 0;
+
+        for (int i = 0; i < 11; i++) {
+            if (info[i] > 0) {
+                enemyScore += (10 - i);
+            }
+        }
+
+        for (int i = 1; i < Math.pow(2, 11); i++) {
+            Arrays.fill(place, 0);
+            int shoot = n;
+            String bi = Integer.toBinaryString(i);
+            int diff = -enemyScore;
+            boolean flag = false;
+
+            for (int j = bi.length() - 1, idx = 0; j >= 0 && shoot > 0; j--) {
+                int check = Character.getNumericValue(bi.charAt(j));
+                if (j == 0) {
+                    place[idx] = shoot;
+                } else if (check == 1 && info[idx] < shoot) {
+                    place[idx] = info[idx] + 1;
+                    diff += (info[idx] == 0) ? (10 - idx) : 2 * (10 - idx);
+                    shoot -= info[idx] + 1;
+                }
+                idx++;
+            } // 모든 경우의 수 탐색
+
+            if (diff == max) {
+                for (int j = 10; j >= 0; j--) {
+                    if (place[j] > answer[j]) {
+                        flag = true;
+                        break;
+                    } else if (place[j] < answer[j]) {
+                        break;
+                    }
+                }
+            }
+            if (diff > max || flag) {
+                System.arraycopy(place, 0, answer, 0, 11);
+                max = diff;
+            } // 더 많은 점수를 따거나 동점에서 더 적은 점수를 많이 쏘면 답안 교체
+        }
+
+        return (max == 0) ? new int[]{-1} : answer;
+    }
+
     private static int makeTwoQueueSame(int[] queue1, int[] queue2) {
 
         int len = queue1.length;
