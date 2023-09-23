@@ -14,6 +14,36 @@ public class Level2 {
 
     }
 
+    private static int getPrimeCounts(int n, int k) {
+
+        int answer = 0;
+        StringBuilder transform = new StringBuilder();
+
+        for (int i = 0; Math.pow(k, i) < n; i++) {
+            int input = (int) (n / Math.pow(k, i)) % k;
+            transform.append((input == 0) ? "0" : input);
+        }
+        String word = transform.reverse().toString();
+
+        for (int i = 1; i <= word.length(); i++) {
+            for (int idx = 0; idx + i <= word.length(); idx++) {
+                boolean flag = true;
+                String sub = word.substring(idx, i + idx);
+                if (!sub.contains("0")) {
+                    long num = Long.parseLong(sub);
+                    if (idx > 0 && !(word.charAt(idx - 1) == '0')) continue;
+                    if (idx + i < word.length() && !(word.charAt(i + idx) == '0')) continue;
+                    for (long j = 2; j <= Math.sqrt(num); j++) {
+                        if (num % j == 0) flag = false;
+                    }
+                    if (flag && num > 1) answer++;
+                }
+            }
+        }
+
+        return answer;
+    }
+
     private static int[] calculateParkingFee(int[] fees, String[] records) {
         // 너무 지저분한듯, 더 나은 방법??
         Map<Integer, Integer> in = new HashMap<>();

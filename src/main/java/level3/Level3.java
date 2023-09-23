@@ -10,71 +10,38 @@ public class Level3 {
     }
 
     private static int aircon(int temperature, int t1, int t2, int a, int b, int[] onboard) {
-
-        // 그리디 풀이는 아닌듯, 완전탐색 아니면 DP?
-        List<Integer> list = new ArrayList<>();
-        int answer = 0;
+        // DP 풀이가 맞는듯
+        final int maxValue = 200 * 20000;
+        int answer = maxValue;
         int diff = 0;
-        int evenCounts = 0;
-        int backup = 0;
-        boolean flag = (a < 2 * b); // 키고끄는게 유지보다 저렴
+
         if (temperature < t1) {
             diff = t1 - temperature;
         } else if (temperature > t2) {
             diff = temperature - t2;
         }
+        int[][] list = new int[onboard.length][diff + 3];
 
-        for (int i = 1, sum = 1; i <= onboard.length; i++) {
-            if (i == onboard.length || onboard[i] != onboard[i - 1]) {
-                list.add(sum);
-                sum = 1;
-            } else {
-                sum++;
-            }
+        for (int i = 1; i < diff + 3; i++) {
+            list[0][i] = maxValue;
         }
-        int[] counts = list.stream().mapToInt(i->i).toArray();
 
-        for (int i = 0; i < counts.length; i++) {
-            if (i == 0) {
-                answer += diff * a;
-            } else if (i + 2 < counts.length) { // 뒤에 탑승이 더 있는 경우
-                if (counts[i + 1] >= 2 * diff) {
-                    if (counts[i] % 2 == 1) {
-                        evenCounts += counts[i] / 2;
-                    } else { // 탑승한 시간이 짝수
-                        evenCounts += (counts[i] - 1) / 2;
-                        answer += Math.min(a, b);
-                        if (diff * a >= (counts[i + 1] + 1) * b && a < b) answer -= b;
-                    }
-                    answer += Math.min(diff * a, (counts[i + 1] + 1) * b);
-                } else { // 탑승 간격이 가까운 경우 = 온도 계속 유지
-                    int sum = counts[i] + counts[i + 1];
-                    if (sum % 2 == 1) {
-                        if (a < b) {
-                            answer += (backup != 1) ? a : 0;
-                            backup = 2;
-                        } else {
-                            answer += b;
-                        }
-                    }
-                    evenCounts += sum / 2;
-                }
-                i++;
-                backup--;
-            } else { // 마지막 탑승인 경우
-                if (counts[i] % 2 == 1) {
-                    evenCounts += counts[i] / 2;
-                } else { // 탑승한 시간이 짝수
-                    evenCounts += (counts[i] - 1) / 2;
-                    if (a < b) {
-                        answer += (backup != 1) ? a : 0;
-                    } else {
-                        answer += b;
-                    }
+        for (int i = 1; i < onboard.length; i++) {
+            for (int j = 0; j < diff + 3; j++) {
+                int add = list[i - 1][j] + ((j == 0) ? 0 : b);
+                if (j > 0) add = Math.min(list[i - 1][j - 1] + a, add);
+                if (j < diff + 2) add = Math.min(list[i - 1][j + 1], add);
+                if (onboard[i] == 1 && j < diff) {
+                    list[i][j] = maxValue;
+                } else {
+                    list[i][j] = add;
                 }
             }
         }
-        answer += (evenCounts) * ((flag) ? a : 2 * b);
+
+        for (int i = 0; i < diff + 3; i++) {
+            answer = Math.min(answer, list[onboard.length - 1][i]);
+        }
 
         return answer;
     }
