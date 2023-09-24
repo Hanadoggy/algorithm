@@ -10,6 +10,38 @@ public class Level1 {
 
     }
 
+    private static int minSquare(int[][] sizes) {
+        int rmax = 0;
+        int cmax = 0;
+        for (int[] size : sizes) {
+            if (size[0] < size[1]) {
+                int temp = size[0];
+                size[0] = size[1];
+                size[1] = temp;
+            }
+        }
+
+        for (int[] size : sizes) {
+            rmax = Math.max(rmax, size[0]);
+            cmax = Math.max(cmax, size[1]);
+        }
+
+        return rmax * cmax;
+    }
+
+    private static int findNumber(int n) {
+
+        int answer = n;
+        for (int i = 2; i < n; i++) {
+            if (n % i == 1) {
+                answer = i;
+                break;
+            }
+        }
+
+        return answer;
+    }
+
     private static String numberFriend(String X, String Y) {
 
         int[] countA = new int[10];

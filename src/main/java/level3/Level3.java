@@ -6,7 +6,8 @@ public class Level3 {
 
     public static void main(String[] args) {
 
-        System.out.println(aircon(11, 8, 10, 10, 1, new int[]{0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1}));
+        // level 3
+
     }
 
     private static int aircon(int temperature, int t1, int t2, int a, int b, int[] onboard) {

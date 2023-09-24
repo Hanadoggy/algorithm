@@ -1,7 +1,6 @@
 package level2;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
 
@@ -10,8 +9,190 @@ public class Level2 {
     public static void main(String[] args) {
 
         // level 2
-        // 재귀, DP 위주로
 
+    }
+
+    private static int[] lightCycle(String[] grid) {
+
+        int row = grid.length;
+        int col = grid[0].length();
+        Map<Character, int[][]> maps = new HashMap<>();
+        boolean[][][] board = new boolean[row][col][4];
+        List<Integer> answer = new ArrayList<>();
+
+        maps.put('S', new int[][]{{0,-1,0},{0,1,1},{-1,0,2},{1,0,3}});
+        maps.put('L', new int[][]{{1,0,3},{-1,0,2},{0,-1,0},{0,1,1}});
+        maps.put('R', new int[][]{{-1,0,2},{1,0,3},{0,1,1},{0,-1,0}});
+
+        for (int i = 0; i < row * col; i++) {
+            for (int j = 0; j < 4; j++) {
+                int r = i / col;
+                int c = i % col;
+                int sum = 0;
+                int[] start = new int[]{r, c, j};
+
+                while (!board[r][c][j]) {
+                    board[r][c][j] = true;
+                    sum++;
+                    int[] next = maps.get(grid[r].charAt(c))[j];
+                    r = (row + r + (next[0])) % row;
+                    c = (col + c + (next[1])) % col;
+                    j = next[2];
+                }
+                if (r == start[0] && c == start[1] && j == start[2] && sum > 0) {
+                    answer.add(sum);
+                }
+            }
+        }
+
+        answer.sort(null);
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    private static int splitPower(int n, int[][] wires) {
+
+        int answer = Integer.MAX_VALUE;
+        Map<Integer, HashSet<Integer>> maps = new HashMap<>();
+        Queue<Integer> list = new LinkedList<>();
+        boolean[] check = new boolean[n + 1];
+
+        for(int[] wire : wires) {
+            if (maps.containsKey(wire[0]))  {
+                maps.get(wire[0]).add(wire[1]);
+            } else {
+                HashSet<Integer> temp = new HashSet<>();
+                temp.add(wire[1]);
+                maps.put(wire[0], temp);
+            }
+            if (maps.containsKey(wire[1]))  {
+                maps.get(wire[1]).add(wire[0]);
+            } else {
+                HashSet<Integer> temp = new HashSet<>();
+                temp.add(wire[0]);
+                maps.put(wire[1], temp);
+            }
+        }
+
+        for (int[] wire : wires) {
+            int sum1 = 1;
+            int sum2 = 1;
+            list.add(1);
+            while (!list.isEmpty()) {
+                int cur = list.poll();
+                check[cur] = true;
+                for (int num : maps.get(cur)) {
+                    if (((cur != wire[0] || num != wire[1]) && (cur != wire[1] || num != wire[0]))
+                            && !check[num]) {
+                        list.add(num);
+                        sum1++;
+                    }
+                }
+            }
+            list.add((check[wire[0]]) ? wire[1] : wire[0]);
+            while (!list.isEmpty()) {
+                int cur = list.poll();
+                check[cur] = true;
+                for (int num : maps.get(cur)) {
+                    if (((cur != wire[0] || num != wire[1]) && (cur != wire[1] || num != wire[0]))
+                            && !check[num]) {
+                        list.add(num);
+                        sum2++;
+                    }
+                }
+            }
+            Arrays.fill(check, false);
+            answer = Math.min(answer, Math.abs(sum1 - sum2));
+        }
+
+        return answer;
+    }
+
+    private static String[] drawStarts(int[][] line) {
+
+        Map<Integer, HashSet<Integer>> maps = new HashMap<>();
+        int[] max = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE};
+        int[] min = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE};
+
+        for (int i = 0; i < line.length; i++) {
+            for (int j = i + 1; j < line.length; j++) {
+                long x = ((long) line[i][1] * line[j][2] - (long) line[i][2] * line[j][1]);
+                long y = ((long) line[i][2] * line[j][0] - (long) line[i][0] * line[j][2]);
+                long under = ((long) line[i][0] * line[j][1] - (long) line[i][1] * line[j][0]);
+                if (under != 0) {
+                    if (x % under == 0 && y % under == 0) {
+                        max[0] = Math.max(max[0], (int) (x / under));
+                        max[1] = Math.max(max[1], (int) (y / under));
+                        min[0] = Math.min(min[0], (int) (x / under));
+                        min[1] = Math.min(min[1], (int) (y / under));
+                        if (maps.containsKey((int) (x / under))) {
+                            maps.get((int) (x / under)).add((int) (y / under));
+                        } else {
+                            HashSet<Integer> temp = new HashSet<>();
+                            temp.add((int) (y / under));
+                            maps.put((int) (x / under), temp);
+                        }
+                    }
+                }
+            }
+        }
+
+        String[] answer = new String[max[1] - min[1] + 1];
+        for (int r = max[1]; r >= min[1]; r--) {
+            StringBuilder draw = new StringBuilder();
+            for (int c = min[0]; c <= max[0]; c++) {
+                if (maps.containsKey(c) && maps.get(c).contains(r)) {
+                    draw.append("*");
+                } else {
+                    draw.append(".");
+                }
+            }
+            answer[max[1] - r] = draw.toString();
+        }
+
+        return answer;
+    }
+
+    private static int[] cutArray(int n, long left, long right) {
+
+        int[] answer = new int[(int) (right - left + 1)];
+        for (long i = left; i < right + 1; i++) {
+            int row = (int) (i / n);
+            int col = (int) (i % n);
+            answer[(int) (i - left)] = (col <= row) ? (row + 1) : (col + 1);
+        }
+
+        return answer;
+    }
+
+    private static int fatigue(int k, int[][] dungeons) {
+
+        int answer = 0;
+        int len = dungeons.length;
+        boolean[] checks = new boolean[len];
+
+        for (int i = 0; i < len; i++) {
+            checks[i] = true;
+            answer = Math.max(answer, calc(dungeons, checks, i, 0, k));
+            checks[i] = false;
+        }
+
+        return answer;
+    }
+
+    private static int calc(int[][] dungeons, boolean[] checks, int idx, int sum, int health) {
+        int temp = sum;
+        if (health >= dungeons[idx][0]) {
+            health -= dungeons[idx][1];
+            sum++;
+        }
+        for (int i = 0; i < dungeons.length; i++) {
+            if (!checks[i]) {
+                checks[i] = true;
+                temp = Math.max(temp, calc(dungeons, checks, i, sum, health));
+                checks[i] = false;
+            }
+        }
+        return Math.max(temp, sum);
     }
 
     private static int getPrimeCounts(int n, int k) {
