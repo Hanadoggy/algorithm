@@ -10,6 +10,21 @@ public class Level1 {
 
     }
 
+    private static long calcShortageMoney(int price, int money, int count) {
+        return Math.abs(Math.min(0, (long) money - ((((long) count * (count + 1)) / 2) * price)));
+    }
+
+    private static int addEmptyNum(int[] numbers) {
+
+        int answer = 45;
+
+        for (int num : numbers) {
+            answer -= num;
+        }
+
+        return answer;
+    }
+
     private static int minSquare(int[][] sizes) {
         int rmax = 0;
         int cmax = 0;

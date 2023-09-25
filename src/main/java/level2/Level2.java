@@ -12,6 +12,76 @@ public class Level2 {
 
     }
 
+    private static int[] distancing(String[][] places) {
+        // BFS
+        int[] dr = new int[]{0,1,0,-1};
+        int[] dc = new int[]{1,0,-1,0};
+        Queue<int[]> list = new LinkedList<>();
+        List<Integer> answer = new ArrayList<>();
+        for (String[] room : places) {
+            int[][] stage = new int[5][5];
+            boolean check = true;
+            for (int i = 0; i < 25; i++) {
+                int r = i / 5;
+                int c = i % 5;
+                if (room[r].charAt(c) == 'P' && stage[r][c] == 0) {
+                    list.add(new int[]{r,c});
+                    stage[r][c] = 1;
+                    while (!list.isEmpty()) {
+                        int[] cur = list.poll();
+                        for (int j = 0; j < 4; j++) {
+                            if (cur[0]+dr[j] >= 0 && cur[0]+dr[j] < 5 && cur[1]+dc[j] >= 0 && cur[1]+dc[j] < 5 &&
+                                    stage[cur[0]][cur[1]] < 3 && stage[cur[0]+dr[j]][cur[1]+dc[j]] == 0) {
+                                if (room[cur[0]+dr[j]].charAt(cur[1]+dc[j]) == 'P') {
+                                    list.clear();
+                                    i = 25;
+                                    check = false;
+                                    break;
+                                } else if (room[cur[0]+dr[j]].charAt(cur[1]+dc[j]) != 'X') {
+                                    stage[cur[0]+dr[j]][cur[1]+dc[j]] = stage[cur[0]][cur[1]] + 1;
+                                    list.add(new int[]{cur[0]+dr[j],cur[1]+dc[j]});
+                                }
+                            }
+
+                        }
+                    }
+                }
+            } // place
+            answer.add((check) ? 1 : 0);
+        } // rooms
+
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    private static int vowelDictionary(String word) {
+        // 완전 탐색
+        int[] match = new int[]{1,0,0,0,0};
+        Map<String, Integer> maps = new HashMap<>();
+        String[] alpha = new String[]{"", "A", "E", "I", "O", "U"};
+        int count = 0;
+
+        while (match[0] < 6) {
+            maps.put(String.format("%s%s%s%s%s",
+                            alpha[match[0]], alpha[match[1]], alpha[match[2]],
+                            alpha[match[3]], alpha[match[4]]),
+                    ++count);
+            for (int i = 0; i < 5; i++) {
+                if (match[i] == 0 || i == 4) {
+                    match[i]++;
+                    break;
+                }
+            }
+            for (int i = 4; i > 0; i--) {
+                if (match[i] == 6) {
+                    match[i] = 0;
+                    match[i-1]++;
+                }
+            }
+        }
+
+        return maps.get(word);
+    }
+
     private static int[] lightCycle(String[] grid) {
 
         int row = grid.length;
