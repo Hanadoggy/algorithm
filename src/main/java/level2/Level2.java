@@ -12,6 +12,101 @@ public class Level2 {
 
     }
 
+    private static int turnBracket(String s) {
+        int answer = 0;
+        Stack<Character> stack = new Stack<>();
+
+        if (s.length() % 2 == 0) {
+            for (int i = 0; i < s.length(); i++) {
+                stack.clear();
+                for (int index = i; index < s.length() + i; index++) {
+                    char bracket = s.charAt(index % s.length());
+                    if ((bracket == ')' || bracket == '}' || bracket == ']') &&
+                            !stack.isEmpty()) {
+                        Character topBracket = stack.pop();
+                        if (!((topBracket == '(' && bracket == ')') ||
+                                (topBracket == '{' && bracket == '}') ||
+                                (topBracket == '[' && bracket == ']'))) {
+                            answer--;
+                            break;
+                        }
+                    } else if ((bracket == ')' || bracket == '}' || bracket == ']')) {
+                        answer--;
+                        break;
+                    } else {
+                        stack.add(bracket);
+                    }
+                }
+                answer++;
+            }
+        }
+        return answer;
+    }
+
+    private static int[] turnMatrixBorder(int rows, int columns, int[][] queries) {
+        List<Integer> answer = new ArrayList<>();
+        int[][] board = new int[rows][columns];
+        int[] dr = new int[]{0,1,0,-1};
+        int[] dc = new int[]{1,0,-1,0};
+
+        for (int i = 0; i < rows * columns; i++) {
+            board[i/columns][i%columns] = i + 1;
+        }
+        for (int[] turn : queries) {
+            for (int i = 0; i < 4; i++) {
+                turn[i]--;
+            }
+            int min = rows * columns;
+            int row = turn[0];
+            int col = turn[1];
+            int before = board[turn[0]][turn[1]];
+            int temp = before;
+            int idx = -1;
+            for (int i = 0; i < (turn[2]+turn[3]-turn[0]-turn[1])*2; i++) {
+                if ((row==turn[0]&&col==turn[1]) || (row==turn[2]&&col==turn[1]) ||
+                        (row==turn[2]&&col==turn[3]) || (row==turn[0]&&col==turn[3])) {
+                    idx = (idx+1)%4;
+                }
+                row += dr[idx];
+                col += dc[idx];
+                temp = board[row][col];
+                min = Math.min(min, temp);
+                board[row][col] = before;
+                before = temp;
+            }
+            answer.add(min);
+        }
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    private static long[] diffBit(long[] numbers) {
+        List<Long> answer = new ArrayList<>();
+        Set<Long> fullBinaryNumbers = new HashSet<>();
+
+        for (long i = 1; Math.pow(2, i)-1 <= Math.pow(10, 16); i++) {
+            fullBinaryNumbers.add((long) Math.pow(2, i)-1);
+        }
+        for (long number : numbers) {
+            StringBuilder binaryNumber = new StringBuilder(Long.toBinaryString(number));
+            if (fullBinaryNumbers.contains(number)) {
+                binaryNumber.setCharAt(0, '0');
+                binaryNumber.insert(0, "1");
+            } else {
+                for (int i = binaryNumber.length()-1; i >= 0; i--) {
+                    if (binaryNumber.charAt(i) == '0') {
+                        if (i < binaryNumber.length()-1) {
+                            binaryNumber.setCharAt(i+1,'0');
+                        }
+                        binaryNumber.setCharAt(i, '1');
+                        break;
+                    }
+                }
+            }
+            answer.add(Long.parseLong(binaryNumber.toString(), 2));
+        }
+        return answer.stream().mapToLong(i -> i).toArray();
+    }
+
     private static int[] distancing(String[][] places) {
         // BFS
         int[] dr = new int[]{0,1,0,-1};
