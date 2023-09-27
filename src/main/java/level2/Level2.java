@@ -9,7 +9,54 @@ public class Level2 {
     public static void main(String[] args) {
 
         // level 2
+        triangleSnail(4);
+    }
 
+    private static int[] triangleSnail(int n) {
+        int[] answer = new int[(n*(n+1))/2];
+        int idx = 0;
+        int number = 1;
+        int row = n;
+        int col = 0;
+        int depth = 1;
+
+        while (number <= answer.length && answer[idx] == 0) {
+            answer[idx] = number++;
+            if (depth == row && idx < answer.length - 1 && answer[idx+1] == 0) {
+                idx++;
+            } else if (idx == (depth*(depth-1))/2 + col) {
+                idx += depth++;
+            } else {
+                idx -= depth--;
+                if (answer[idx] > 0) {
+                    col++;
+                    idx += (depth*2 +2);
+                    depth += 2;
+                    row--;
+                }
+            }
+        }
+        return answer;
+    }
+
+    public static int[] repeatBinaryTransform(String s) {
+        return binaryTransform(s, new int[2]);
+    }
+
+    public static int[] binaryTransform(String num, int[] answer) {
+        if (num.length() > 1) {
+            int count = 0;
+            for (int i = 0; i < num.length(); i++) {
+                if (num.charAt(i) == '0') {
+                    count++;
+                }
+            }
+            answer[1] += count;
+            answer[0]++;
+            return binaryTransform(Integer.toBinaryString(num.length() - count), answer);
+        } else {
+            return answer;
+        }
     }
 
     private static int turnBracket(String s) {
