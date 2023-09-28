@@ -9,7 +9,46 @@ public class Level2 {
     public static void main(String[] args) {
 
         // level 2
-        triangleSnail(4);
+
+    }
+
+    private static long maximizeOperations(String expression) {
+        List<Long> operands = new ArrayList<>();
+        List<Character> operators = new ArrayList<>();
+        String[] priorities = new String[]{"+-*","+*-","-+*","-*+","*+-","*-+"};
+        long answer = 0;
+        int beforeIndex = 0;
+
+        for (int i = 0; i < expression.length(); i++) {
+            if ("+-*".contains(expression.substring(i,i+1))) {
+                operands.add(Long.parseLong(expression.substring(beforeIndex, i)));
+                operators.add(expression.charAt(i));
+                beforeIndex = i + 1;
+            }
+        }
+        operands.add(Long.parseLong(expression.substring(beforeIndex)));
+        for (int i = 0; i < 6; i++) {
+            List<Long> numCopy = new ArrayList<>(operands);
+            List<Character> opCopy = new ArrayList<>(operators);
+
+            for (int j = 0; j < 3; j++) {
+                for (int idx = 0; idx < opCopy.size(); idx++) {
+                    if (opCopy.get(idx) == priorities[i].charAt(j)) {
+                        if (opCopy.get(idx) == '+') {
+                            numCopy.set(idx, numCopy.get(idx) + numCopy.get(idx+1));
+                        } else if (opCopy.get(idx) == '-') {
+                            numCopy.set(idx, numCopy.get(idx) - numCopy.get(idx+1));
+                        } else if (opCopy.get(idx) == '*') {
+                            numCopy.set(idx, numCopy.get(idx) * numCopy.get(idx+1));
+                        }
+                        numCopy.remove(idx+1);
+                        opCopy.remove(idx--);
+                    }
+                }
+            }
+            answer = Math.max(answer, Math.abs(numCopy.get(0)));
+        }
+        return answer;
     }
 
     private static int[] triangleSnail(int n) {
