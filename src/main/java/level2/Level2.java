@@ -1,5 +1,6 @@
 package level2;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -10,6 +11,169 @@ public class Level2 {
 
         // level 2
 
+    }
+
+    private static int skillTrees(String skill, String[] skill_trees) {
+        int answer = 0;
+
+        for (String trees : skill_trees) {
+            int prioriIdx = 0;
+            for (int i = 0; i <= trees.length(); i++) {
+                if (i == trees.length()) {
+                    answer++;
+                } else if (skill.contains(trees.substring(i,i+1))) {
+                    if (skill.charAt(prioriIdx) != trees.charAt(i)) {
+                        break;
+                    }
+                    prioriIdx++;
+                }
+            }
+        }
+        return answer;
+    }
+
+    private static int visitedLength(String dirs) {
+        boolean[][][] visited = new boolean[11][11][4];
+        int[] dr = new int[]{0,0,1,-1};
+        int[] dc = new int[]{1,-1,0,0};
+        int[] reverseIdx = new int[]{1,0,3,2};
+        int answer = 0;
+
+        dirs = dirs.replaceAll("R","0")
+                .replaceAll("L","1")
+                .replaceAll("D","2")
+                .replaceAll("U","3");
+        for (int i = 0, row = 5, col = 5; i < dirs.length(); i++) {
+            int idx = Character.getNumericValue(dirs.charAt(i));
+            if (row+dr[idx] >= 0 && row+dr[idx] < 11 && col+dc[idx] >= 0 && col+dc[idx] < 11) {
+                if (!visited[row][col][idx]) {
+                    answer++;
+                }
+                visited[row][col][idx] = true;
+                row += dr[idx];
+                col += dc[idx];
+                visited[row][col][reverseIdx[idx]] = true;
+            }
+        }
+        return answer;
+    }
+
+    private static int compressString(String s) {
+        int answer = s.length();
+
+        for (int len = 1; len <= s.length() / 2; len++) {
+            StringBuilder compressed = new StringBuilder();
+            int idx = len;
+            int count = 1;
+
+            while (idx < s.length()) {
+                if (idx + len < s.length()) {
+                    if (s.substring(idx-len, idx).equals(s.substring(idx,idx+len))) {
+                        count++;
+                    } else {
+                        compressed.append(((count > 1) ? count : "")).append(s, idx-len, idx);
+                        count = 1;
+                    }
+                } else if (idx + len == s.length()) {
+                    if (s.substring(idx-len, idx).equals(s.substring(idx,idx+len))) {
+                        compressed.append(((++count > 1) ? count : "")).append(s, idx-len, idx);
+                    } else {
+                        compressed.append(((count > 1) ? count : "")).append(s, idx-len, idx);
+                        compressed.append(s, idx, idx+len);
+                    }
+                } else {
+                    compressed.append(((count > 1) ? count : "")).append(s, idx-len, idx);
+                    compressed.append(s.substring(idx));
+                }
+                idx += len;
+            }
+            answer = Math.min(answer, compressed.length());
+        }
+        return answer;
+    }
+
+    public static String bracketTransform(String word) {
+        if (word.isEmpty()) {
+            return "";
+        } else {
+            Stack<Character> stack = new Stack<>();
+            StringBuilder left = new StringBuilder();
+            StringBuilder right = new StringBuilder();
+            int idx = 0;
+
+            for (int count = 0; idx < word.length(); idx++) {
+                if (word.charAt(idx) == '(') {
+                    count++;
+                } else {
+                    count--;
+                }
+                if (count == 0) {
+                    left.append(word, 0, ++idx);
+                    break;
+                }
+            }
+            if (idx < word.length() - 1) {
+                right.append(word.substring(idx));
+            }
+            for (idx = 0; idx < left.length(); idx++) {
+                if (left.charAt(idx) == '(') {
+                    stack.push('(');
+                } else {
+                    if (stack.isEmpty()) {
+                        break;
+                    } else {
+                        stack.pop();
+                    }
+                }
+            }
+            if (stack.isEmpty() && idx == left.length()) {
+                return left + bracketTransform(right.toString());
+            } else {
+                return "(" + bracketTransform(right.toString()) +
+                        ")" +
+                        left.substring(1, left.length() - 1)
+                                .replaceAll("\\(", "t")
+                                .replaceAll("\\)", "(")
+                                .replaceAll("t", ")");
+            }
+        }
+    }
+
+    private static long intactSquare(int w, int h) {
+        long answer = 0;
+
+        for (int i = 1; i < w; i++) {
+            answer += ((long) h * i) / (long) w;
+        }
+        return answer * 2;
+    }
+
+    private static int[] getTuple(String s) {
+        String collect = s.substring(2, s.length() - 2);
+        if (!collect.contains(",")) {
+            return new int[]{Integer.parseInt(collect)};
+        }
+        String[] split = collect.split("\\},\\{");
+        Set<Integer> numSet = new HashSet<>();
+        List<Integer> answer = new ArrayList<>();
+
+        Arrays.sort(split);
+        for (String col : split) {
+            if (col.length() == 1) {
+                numSet.add(Integer.parseInt(col));
+                answer.add(Integer.parseInt(col));
+            } else {
+                String[] nums = col.split(",");
+                for (String num : nums) {
+                    int item = Integer.parseInt(num);
+                    if (!numSet.contains(item)) {
+                        numSet.add(item);
+                        answer.add(item);
+                    }
+                }
+            }
+        }
+        return answer.stream().mapToInt(i->i).toArray();
     }
 
     private static long maximizeOperations(String expression) {
@@ -49,6 +213,8 @@ public class Level2 {
             answer = Math.max(answer, Math.abs(numCopy.get(0)));
         }
         return answer;
+
+
     }
 
     private static int[] triangleSnail(int n) {
