@@ -13,6 +13,86 @@ public class Level2 {
 
     }
 
+    private static int candidateKey(String[][] relation) {
+        int len = relation[0].length;
+        Set<String> keys = new HashSet<>();
+        int[] index = new int[len+1];
+        int answer = 0;
+
+        for (int count = 0; index[len] == 0; count++) {
+            StringBuilder key = new StringBuilder();
+            boolean check = true;
+
+            index[0]++;
+            for (int i = 0; i < len; i++) {
+                if(index[i] == 2) {
+                    index[i] = 0;
+                    index[i+1]++;
+                }
+            }
+            if (index[len] == 1) break;
+            for (int i = 0; i < len; i++) {
+                if (index[i] == 1) {
+                    key.append(i);
+                }
+            }
+            for (String dup : keys) {
+                int keyCount = 0;
+                for (int i = 0; i < dup.length() && check; i++) {
+                    if (key.toString().contains(dup.substring(i,i+1))) {
+                        keyCount++;
+                    }
+                }
+                if (keyCount == dup.length()) {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+                Set<String> duplicated = new HashSet<>();
+
+                for (String[] record : relation) {
+                    StringBuilder entity = new StringBuilder();
+                    for (int k = 0; k < len; k++) {
+                        if (index[k] == 1) {
+                            entity.append(record[k]);
+                        }
+                    }
+                    if (duplicated.contains(entity.toString())) {
+                        check = false;
+                        break;
+                    }
+                    duplicated.add(entity.toString());
+                }
+            }
+            if (check) {
+                answer++;
+                keys.add(key.toString());
+            }
+        }
+        return answer;
+    }
+
+    private static int targetNumber(int[] numbers, int target) {
+        Stack<int[]> stack = new Stack<>();
+        int answer = 0;
+
+        stack.push(new int[]{0, -numbers[0]});
+        stack.push(new int[]{0, numbers[0]});
+        while (!stack.isEmpty()) {
+            int[] pop = stack.pop(); // idx, sum
+            if (pop[0] == numbers.length - 2) {
+                if (pop[1] + numbers[pop[0]+1] == target || pop[1] - numbers[pop[0]+1] == target) {
+                    answer++;
+                }
+            } else {
+                stack.push(new int[]{pop[0]+1, pop[1]+numbers[pop[0]+1]});
+                stack.push(new int[]{pop[0]+1, pop[1]-numbers[pop[0]+1]});
+            }
+        }
+        return answer;
+    }
+
     private static int skillTrees(String skill, String[] skill_trees) {
         int answer = 0;
 
