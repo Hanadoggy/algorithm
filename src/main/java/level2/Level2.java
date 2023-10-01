@@ -13,6 +13,27 @@ public class Level2 {
 
     }
 
+    private static String[] openChat(String[] record) {
+        Map<String, String> nicknames = new HashMap<>();
+        List<String> answer = new ArrayList<>();
+
+        for (int i = record.length - 1; i >= 0; i--) {
+            String[] split = record[i].split(" ");
+            if (!split[0].equals("Leave")) {
+                nicknames.putIfAbsent(split[1], split[2]);
+            }
+        }
+        for (String log : record) {
+            String[] split = log.split(" ");
+            if (split[0].equals("Enter")) {
+                answer.add(String.format("%s님이 들어왔습니다.", nicknames.get(split[1])));
+            } else if (split[0].equals("Leave")) {
+                answer.add(String.format("%s님이 나갔습니다.", nicknames.get(split[1])));
+            }
+        }
+        return answer.stream().toArray(String[]::new);
+    }
+
     private static int candidateKey(String[][] relation) {
         int len = relation[0].length;
         Set<String> keys = new HashSet<>();
