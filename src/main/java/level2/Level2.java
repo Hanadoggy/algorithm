@@ -13,6 +13,56 @@ public class Level2 {
 
     }
 
+    private static String makeBigNumber(String number, int k) {
+        int max = 0;
+        int idx = 0;
+        StringBuilder answer = new StringBuilder();
+
+        while (answer.length() < number.length() - k) {
+            for (int i = idx; i <= k + answer.length(); i++) {
+                int num = Character.getNumericValue(number.charAt(i));
+
+                if (num == 9) {
+                    idx = i + 1;
+                    max = 9;
+                    break;
+                } else if (num > max) {
+                    max = num;
+                    idx = i + 1;
+                }
+            }
+            answer.append(max);
+            max = 0;
+            if (idx >= k + answer.length()) {
+                answer.append(number.substring(idx));
+            }
+        }
+        return answer.toString();
+    }
+
+    private static int rescueBoat(int[] people, int limit) {
+        int answer = 0;
+        int front = 0;
+        int back = people.length - 1;
+        int check = 0;
+
+        Arrays.sort(people);
+        while (check < people.length) {
+            if (front < back) {
+                if (people[front] + people[back] <= limit) {
+                    check += 2;
+                    answer++;
+                    front++;
+                }
+                back--;
+            } else {
+                answer += (people.length - check);
+                break;
+            }
+        }
+        return answer;
+    }
+
     private static String[] openChat(String[] record) {
         Map<String, String> nicknames = new HashMap<>();
         List<String> answer = new ArrayList<>();
