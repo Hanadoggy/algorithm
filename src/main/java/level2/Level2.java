@@ -13,6 +13,64 @@ public class Level2 {
 
     }
 
+    private static int[] carpet(int brown, int yellow) {
+        int sum = (brown - 4) / 2;
+        int i = 1;
+
+        for (; i <= sum - i; i++) {
+            if (i * (sum - i) == yellow) {
+                break;
+            }
+        }
+        return new int[]{Math.max(i, sum-i)+2, Math.min(i, sum-i)+2};
+    }
+
+    private static int solution(String name) {
+        boolean[] check = new boolean[name.length()];
+        int addScore = 0;
+        int moving = 0;
+
+        check[0] = true;
+        for (int i = 0; i < name.length(); i++) {
+            char alpha = name.charAt(i);
+            if (alpha >= 'N') {
+                addScore += ('Z' - alpha + 1);
+                moving++;
+            } else if (alpha > 'A') {
+                addScore += (alpha - 'A');
+                moving++;
+            }
+        }
+        System.out.println(addScore);
+        return addScore + ((moving > 0) ? calcJoyStick(check, 0, 0, name, ((name.charAt(0) == 'A') ? 0 : 1), moving) : 0);
+    }
+
+    private static int calcJoyStick(boolean[] check, int idx, int sum, String name, int count, int moving) {
+        int len = name.length();
+        int min = len;
+
+        if (count == moving) {
+            return sum;
+        }
+        for (int i = 1; i < len; i++) {
+            if (name.charAt((idx+i)%len) != 'A' && !check[(idx+i)%len]) {
+                check[(idx+i)%len] = true;
+                min = calcJoyStick(check, (idx+i)%len, sum+i, name, count+1, moving);
+                check[(idx+i)%len] = false;
+                break;
+            }
+        }
+        for (int i = 1; i < len; i++) {
+            if (name.charAt((len+idx-i)%len) != 'A' && !check[(len+idx-i)%len]) {
+                check[(len+idx-i) % len] = true;
+                min = Math.min(min, calcJoyStick(check, (len+idx-i)%len, sum+i, name, count+1, moving));
+                check[(len+idx-i) % len] = false;
+                break;
+            }
+        }
+        return min;
+    }
+
     private static String makeBigNumber(String number, int k) {
         int max = 0;
         int idx = 0;
