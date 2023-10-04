@@ -9,7 +9,7 @@ public class Sorting {
         System.out.println(maximumNumber(new int[]{555, 565, 566, 55, 56, 5, 54, 544, 549}));
     }
 
-    private static String maximumNumber(int[] numbers) {
+    private static String maximumNumber(int[] numbers) { // 최적화 진행
         StringBuilder answer = new StringBuilder();
 
         List<String> collect = Arrays.stream(numbers).mapToObj(String::valueOf)
@@ -19,14 +19,11 @@ public class Sorting {
                         .thenComparing(s -> (s.length() > 2) ? s.charAt(2) : s.charAt(0))
                         .thenComparing(s -> (s.length() > 3) ? s.charAt(3) : s.charAt(0))
                         .thenComparing(s -> s.charAt(s.length()-1))
-                        .thenComparing(String::length)
                         .reversed()).toList();
         for (String num : collect) {
-            if (!num.equals("0") || !answer.toString().equals("0")) {
-                answer.append(num);
-            }
+            answer.append(num);
         }
-        return answer.toString();
+        return (answer.charAt(0) == '0') ? "0" : answer.toString();
     }
 
     private static int hIndex(int[] citations) {

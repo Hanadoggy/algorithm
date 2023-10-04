@@ -12,7 +12,6 @@ public class Level2 {
         // level 2
 
     }
-
     private static int[] carpet(int brown, int yellow) {
         int sum = (brown - 4) / 2;
         int i = 1;
