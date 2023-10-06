@@ -12,6 +12,36 @@ public class Level2 {
         // level 2
 
     }
+
+    private static String nBaseGame(int n, int t, int m, int p) {
+        StringBuilder order = new StringBuilder();
+        StringBuilder answer = new StringBuilder();
+
+        for (int i = 0; i <= t * m; i++) {
+            order.append(changeDecimalToCustomNBase(i, n));
+        }
+        for (int i = p-1; answer.length() < t; i += m) {
+            answer.append(order.charAt(i));
+        }
+        return answer.toString();
+    }
+
+    private static String changeDecimalToCustomNBase(int number, int base) {
+        if (number == 0) {
+            return "0";
+        }
+
+        StringBuilder changed = new StringBuilder();
+
+        while (number > 0) {
+            int remain = number % base;
+            changed.insert(0, ((remain < 10) ? remain :
+                    Integer.toHexString(remain).toUpperCase()));
+            number /= base;
+        }
+        return changed.toString();
+    }
+
     private static int[] carpet(int brown, int yellow) {
         int sum = (brown - 4) / 2;
         int i = 1;
@@ -24,7 +54,7 @@ public class Level2 {
         return new int[]{Math.max(i, sum-i)+2, Math.min(i, sum-i)+2};
     }
 
-    private static int solution(String name) {
+    private static int joyStick(String name) {
         boolean[] check = new boolean[name.length()];
         int addScore = 0;
         int moving = 0;
