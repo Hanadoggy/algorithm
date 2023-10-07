@@ -13,6 +13,80 @@ public class Level2 {
 
     }
 
+    private static int[] messageCompress(String msg) {
+        Map<String, Integer> maps = new HashMap<>();
+        List<Integer> answer = new ArrayList<>();
+        int nextIdx = 1;
+        int max = 1;
+
+        for (int i = 0; i < 26; i++) {
+            maps.put(String.format("%c", 'A'+i), nextIdx++);
+        }
+        for (int i = 0; i < msg.length(); nextIdx++) {
+            for (int j = ((i+max <= msg.length()) ? max : msg.length()-i); j > 0; j--) {
+                String word = msg.substring(i, i+j);
+                if (maps.containsKey(word)) {
+                    answer.add(maps.get(word));
+                    if (i+j < msg.length()) {
+                        maps.put(msg.substring(i, i+j+1), nextIdx);
+                    }
+                    i += j;
+                    max = Math.max(max, word.length()+1);
+                    break;
+                }
+            }
+        }
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    private static String[] sortingFileName(String[] files) {
+        List<CustomFile> list = new ArrayList<>();
+        String[] answer = new String[files.length];
+
+        for (int i = 0; i < files.length; i++) {
+            int front = 0;
+            int end = 0;
+            String file = files[i];
+
+            for (int j = 0; j <= file.length(); j++) {
+                if (j == file.length()) {
+                    list.add(new CustomFile(file.substring(0, front),
+                            file.substring(front, j),
+                            file.substring(j), i));
+                } else if (front == 0 && Character.isDigit(file.charAt(j))) {
+                    front = j;
+                } else if (front != 0 && !Character.isDigit(file.charAt(j))) {
+                    end = j;
+                    list.add(new CustomFile(file.substring(0, front),
+                            file.substring(front, end),
+                            file.substring(end), i));
+                    break;
+                }
+            }
+        }
+        list.sort(Comparator.comparing((CustomFile f) -> f.head.toUpperCase())
+                .thenComparing((CustomFile f) -> Integer.parseInt(f.number))
+                .thenComparing((CustomFile f) -> f.order));
+        for (int i = 0; i < files.length; i++) {
+            answer[i] = String.format("%s%s%s", list.get(i).head, list.get(i).number, list.get(i).tail);
+        }
+        return answer;
+    }
+
+    static class CustomFile {
+        String head;
+        String number;
+        String tail;
+        int order;
+
+        public CustomFile(String head, String number, String tail, int order) {
+            this.head = head;
+            this.number = number;
+            this.tail = tail;
+            this.order = order;
+        }
+    }
+
     private static String nBaseGame(int n, int t, int m, int p) {
         StringBuilder order = new StringBuilder();
         StringBuilder answer = new StringBuilder();
