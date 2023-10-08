@@ -13,6 +13,95 @@ public class Level2 {
 
     }
 
+    private static int cacheHit(int cacheSize, String[] cities) {
+        Map<String, Integer> cache = new HashMap<>();
+        PriorityQueue<Integer> orders = new PriorityQueue<>();
+        int answer = 0;
+
+        if (cacheSize == 0) {
+            return 5 * cities.length;
+        }
+        for (int idx = 0; idx < cities.length; idx++) {
+            String city = cities[idx].toUpperCase();
+            if (cache.containsKey(city)) {
+                orders.remove(cache.get(city));
+                orders.add(idx);
+                cache.put(city, idx);
+                answer++;
+            } else if (orders.size() < cacheSize) {
+                orders.add(idx);
+                cache.put(city, idx);
+                answer += 5;
+            } else {
+                int poll = orders.poll();
+                for (String name : cache.keySet()) {
+                    if (cache.get(name) == poll) {
+                        cache.remove(name);
+                        break;
+                    }
+                }
+                cache.put(city, idx);
+                orders.add(idx);
+                answer += 5;
+            }
+        }
+        return answer;
+    }
+
+    private static String recentMusic(String m, String[] musicinfos) {
+        Map<String, Music> maps = new HashMap<>();
+        String answer = "(None)";
+        int order = 100;
+        int max = 0;
+
+        m = transformScale(m);
+        for (String info : musicinfos) {
+            String[] split = info.split(",");
+            int playTime = getPlayTime(split[0], split[1]);
+            maps.put(transformScale(split[3]) + order, new Music(split[2], playTime, order++));
+        }
+        for (String scale : maps.keySet()) {
+            Music music = maps.get(scale);
+            scale = scale.substring(0, scale.length() - 3);
+            String check = String.format("%s%s", scale.repeat(music.playTime/scale.length()),
+                    scale.substring(0, (music.playTime%scale.length())));
+            if (check.contains(m) &&
+                    (music.playTime > max || (music.playTime == max && music.order < order))) {
+                max = music.playTime;
+                answer = music.title;
+                order = music.order;
+            }
+        }
+        return answer;
+    }
+
+    private static String transformScale(String scale) {
+        return scale.replaceAll("C#", "H")
+                .replaceAll("D#", "I")
+                .replaceAll("F#", "J")
+                .replaceAll("G#", "K")
+                .replaceAll("A#", "L");
+    }
+
+    private static int getPlayTime(String start, String end) {
+        String[] startSplit = start.split(":");
+        String[] endSplit = end.split(":");
+        return (((Integer.parseInt(endSplit[0])*60) + Integer.parseInt(endSplit[1])) -
+                ((Integer.parseInt(startSplit[0])*60) + Integer.parseInt(startSplit[1])));
+    }
+
+    private static class Music {
+        String title;
+        int playTime;
+        int order;
+
+        public Music(String title, int playTime, int order) {
+            this.title = title;
+            this.playTime = playTime;
+            this.order = order;
+        }
+    }
+
     private static int[] messageCompress(String msg) {
         Map<String, Integer> maps = new HashMap<>();
         List<Integer> answer = new ArrayList<>();
