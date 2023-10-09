@@ -2,6 +2,7 @@ package level2;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.*;
 
@@ -11,6 +12,87 @@ public class Level2 {
 
         // level 2
 
+    }
+
+    private static int regexPatternMatching(String str1, String str2) {
+        Map<String, Integer> first = new HashMap<>();
+        Map<String, Integer> second = new HashMap<>();
+        Pattern pattern = Pattern.compile("^[A-Z]+$");
+        int sub = 0;
+        int add = 0;
+
+        for (int i = 0; i < str1.length()-1; i++) {
+            String substr = str1.substring(i, i+2).toUpperCase();
+            if (pattern.matcher(substr).matches()) {
+                first.put(substr, first.getOrDefault(substr, 0)+1);
+            }
+        }
+        for (int i = 0; i < str2.length()-1; i++) {
+            String substr = str2.substring(i, i+2).toUpperCase();
+            if (pattern.matcher(substr).matches()) {
+                second.put(substr, second.getOrDefault(substr, 0)+1);
+            }
+        }
+        for (String key : first.keySet()) {
+            if (second.containsKey(key)) {
+                sub += Math.min(first.get(key), second.get(key));
+                add += Math.max(first.get(key), second.get(key));
+            } else {
+                add += first.get(key);
+            }
+        }
+        for (String key : second.keySet()) {
+            if (!first.containsKey(key)) {
+                add += second.get(key);
+            }
+        }
+        return (add > 0) ? ((sub * 65536) / add) : 65536;
+    }
+
+    private static int friends4Block(int m, int n, String[] board) {
+        StringBuilder boards = new StringBuilder();
+        boolean flag = true;
+        int answer = 0;
+
+        for (String line : board) {
+            boards.append(line);
+        }
+        while (flag) {
+            flag = false;
+            boolean[] checks = new boolean[m*n];
+            for (int i = 0; i < (m-1) * n; i++) {
+                char cur = boards.charAt(i);
+                if (cur != 'X' && i%n != n-1 &&
+                        cur == boards.charAt(i+1) &&
+                        cur == boards.charAt(i+n) &&
+                        cur == boards.charAt(i+n+1)) {
+                    flag = true;
+                    checks[i] = true;
+                    checks[i+1] = true;
+                    checks[i+n] = true;
+                    checks[i+n+1] = true;
+                }
+            }
+            if (flag) {
+                for (int i = 0; i < m * n; i++) {
+                    if (checks[i]) {
+                        boards.setCharAt(i, 'X');
+                        answer++;
+                    }
+                }
+                for (int i = ((m-1)*n)-1; i >= 0; i--) {
+                    if (boards.charAt(i) != 'X' && boards.charAt(i+n) == 'X') {
+                        int downIdx = i + n;
+                        while (downIdx < (m-1) * n && boards.charAt(downIdx + n) == 'X') {
+                            downIdx += n;
+                        }
+                        boards.setCharAt(downIdx, boards.charAt(i));
+                        boards.setCharAt(i, 'X');
+                    }
+                }
+            }
+        }
+        return answer;
     }
 
     private static int cacheHit(int cacheSize, String[] cities) {
