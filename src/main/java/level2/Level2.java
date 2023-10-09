@@ -14,6 +14,34 @@ public class Level2 {
 
     }
 
+    public int[] solution(int n, String[] words) {
+        Set<String> duplicated = new HashSet<>();
+        String before = words[0].substring(0, 1);
+        int answer = n;
+
+        for (String word : words) {
+            if (duplicated.contains(word) ||
+                    word.charAt(0) != before.charAt(before.length()-1)) {
+                return new int[]{(answer%n)+1, answer/n};
+            }
+            duplicated.add(word);
+            before = word;
+            answer++;
+        }
+        return new int[]{0,0};
+    }
+
+    private static int gameRound(int n, int a, int b) {
+        int answer = 1;
+
+        while (Math.abs(a-b) > 1 || Math.min(a,b)%2 == 0) {
+            a = (a/2) + (a%2);
+            b = (b/2) + (b%2);
+            answer++;
+        }
+        return answer;
+    }
+
     private static int regexPatternMatching(String str1, String str2) {
         Map<String, Integer> first = new HashMap<>();
         Map<String, Integer> second = new HashMap<>();
