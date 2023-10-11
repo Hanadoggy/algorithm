@@ -14,6 +14,94 @@ public class Level2 {
 
     }
 
+    private static int getLeastCommonMultipleN(int[] arr) {
+        Map<Integer, Integer> maps = new HashMap<>();
+        int answer = 1;
+
+        for (int num : arr) {
+            int i = 2;
+            while (num > 1) {
+                int count = 0;
+                while (num % i == 0) {
+                    num /= i;
+                    count++;
+                }
+                if (count > 0) {
+                    maps.put(i, Math.max(maps.getOrDefault(i, 0), count));
+                }
+                i++;
+            }
+        }
+        for (int key : maps.keySet()) {
+            answer *= Math.pow(key, maps.get(key));
+        }
+        return answer;
+    }
+
+    private static int pairRemoval(String word) {
+        Stack<Character> stack = new Stack<>();
+
+        if (word.length() % 2 == 1) {
+            return 0;
+        }
+        for (int i = 0; i < word.length(); i++) {
+            if (stack.isEmpty() || stack.peek() != word.charAt(i)) {
+                stack.push(word.charAt(i));
+            } else {
+                stack.pop();
+            }
+        }
+        return (stack.isEmpty()) ? 1 : 0;
+    }
+
+    private static int delivery(int N, int[][] roads, int K) {
+        int[][] distance = new int[N][N];
+        int[] sum = new int[N];
+        Queue<Integer> queue = new LinkedList<>();
+        int answer = 0;
+
+        for (int[] road : roads) {
+            int i = road[0]-1;
+            int j = road[1]-1;
+            int length = road[2];
+            distance[i][j] = (length < distance[i][j] || distance[i][j] == 0) ?
+                    length : distance[i][j];
+            distance[j][i] = (length < distance[j][i] || distance[j][i] == 0) ?
+                    length : distance[j][i];
+        }
+        queue.add(0);
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int i = 0; i < N; i++) {
+                if (i != cur && distance[cur][i] != 0 &&
+                        (sum[i] == 0 || sum[i] > sum[cur] + distance[cur][i])) {
+                    queue.add(i);
+                    sum[i] = sum[cur] + distance[cur][i];
+                }
+            }
+        }
+        for (int i = 1; i < N; i++) {
+            if (sum[i] <= K) {
+                answer++;
+            }
+        }
+        return answer + 1;
+    }
+
+    private static int jumpAndTeleport(int n) {
+        int answer = 1;
+
+        while (n > 1) {
+            if (n % 2 == 0) {
+                n /= 2;
+            } else {
+                n--;
+                answer++;
+            }
+        }
+        return answer;
+    }
+
     public int[] solution(int n, String[] words) {
         Set<String> duplicated = new HashSet<>();
         String before = words[0].substring(0, 1);
