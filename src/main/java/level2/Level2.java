@@ -1,6 +1,5 @@
 package level2;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -12,6 +11,75 @@ public class Level2 {
 
         // level 2
 
+    }
+
+    private static int expressionOfNumber(int n) {
+        int[] sum = new int[n+1];
+        int start = n;
+        int end = n;
+        int answer = 0;
+
+        for (int i = 1, before = 0; i <= n; i++) {
+            sum[i] = sum[i-1] + i;
+        }
+        while (start >= 0 && end >= 0) {
+            if (sum[end] - sum[start] == n) {
+                answer++;
+                end--;
+                start--;
+            } else if (sum[end] - sum[start] > n) {
+                end--;
+            } else {
+                start--;
+            }
+        }
+        return answer;
+    }
+
+    private static int[] lineUp(int n, long k) {
+        List<Long> list = new ArrayList<>();
+        List<Integer> remain = new ArrayList<>();
+        int[] answer = new int[n];
+
+        k--;
+        list.add(0L);
+        list.add(1L);
+        remain.add(1);
+        for (int i = 2; i <= n; i++) {
+            long before = list.get(i-1) * ((long) i);
+            list.add(before);
+            remain.add(i);
+        }
+        for (int i = n; i > 0; i--) {
+            int idx = (int) (k / (list.get(i) / (long) i));
+            answer[n-i] = remain.get(idx);
+            remain.remove(idx);
+            k = k % (list.get(i) / (long) i);
+        }
+        return answer;
+    }
+
+    private static int makeMinimumNumber(int[] A, int[] B) {
+        int answer = 0;
+
+        Arrays.sort(A);
+        Arrays.sort(B);
+        for (int i = 0; i < A.length; i++) {
+            answer += (A[i] * B[A.length - i - 1]);
+        }
+        return answer;
+    }
+
+    private static int fiboNumber(int n) {
+        final int NUM = 1234567;
+        int[] fibo = new int[n+1];
+
+        fibo[0] = 0;
+        fibo[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            fibo[i] = (fibo[i-1] + fibo[i-2]) % NUM;
+        }
+        return fibo[n];
     }
 
     private static int[][] multipleMatrix(int[][] arr1, int[][] arr2) {
