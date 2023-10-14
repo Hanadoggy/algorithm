@@ -13,6 +13,85 @@ public class Level2 {
 
     }
 
+    private static int[] coloringBook(int m, int n, int[][] picture) {
+        int[] dr = new int[]{1,-1,0,0};
+        int[] dc = new int[]{0,0,1,-1};
+        boolean[][] check = new boolean[m][n];
+        Queue<Integer> visit = new LinkedList<>();
+        int answer = 0;
+        int maxSize = 0;
+
+        for (int row = 0; row < m; row++) {
+            for (int col = 0; col < n; col++) {
+                if (picture[row][col] > 0 && !check[row][col]) {
+                    int count = 0;
+                    int color = picture[row][col];
+                    visit.add(row);
+                    visit.add(col);
+                    check[row][col] = true;
+                    while (!visit.isEmpty()) {
+                        count++;
+                        int r = visit.poll();
+                        int c = visit.poll();
+                        for (int i = 0; i < 4; i++) {
+                            int nr = r+dr[i];
+                            int nc = c+dc[i];
+                            if (nr >= 0 && nr < m && nc >= 0 && nc < n &&
+                                    picture[nr][nc] == color && !check[nr][nc]) {
+                                visit.add(nr);
+                                visit.add(nc);
+                                check[nr][nc] = true;
+                            }
+                        }
+                    }
+                    maxSize = Math.max(maxSize, count);
+                    answer++;
+                }
+            }
+        }
+        return new int[]{answer, maxSize};
+    }
+
+    private static int takeGroupPicture(int n, String[] data) {
+        Character[] members = new Character[]{'A','C','F','J','M','N','R','T'};
+        List<Integer> list = new ArrayList<>();
+        char[] order = new char[8];
+        int answer = 0;
+
+        for (int i = 0; i <= 8; i++) {
+            list.add((i > 1) ? (list.get(i-1) * i) : i);
+        }
+        for (int num = 0; num < list.get(list.size()-1); num++) {
+            int k = num;
+            int count = 0;
+            List<Character> remains = new ArrayList<>(List.of(members));
+            for (int i = 8; i > 0; i--) {
+                int div = list.get(i) / i;
+                int idx = k / div;
+                order[8-i] = remains.get(idx);
+                remains.remove(idx);
+                k = k % div;
+            }
+            String temp = new String(order);
+            for (String cond : data) {
+                int distance = Character.getNumericValue(cond.charAt(4));
+                int left = temp.indexOf(cond.substring(0,1));
+                int right = temp.indexOf(cond.substring(2,3));
+                if ((cond.charAt(3) == '=' && Math.abs(left - right) == distance+1) ||
+                        (cond.charAt(3) == '>' && Math.abs(left - right) > distance+1) ||
+                        (cond.charAt(3) == '<' && Math.abs(left - right) <= distance)) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count == n) {
+                answer++;
+            }
+        }
+        return answer;
+    }
+
     private static int expressionOfNumber(int n) {
         int[] sum = new int[n+1];
         int start = n;
