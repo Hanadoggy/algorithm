@@ -13,6 +13,81 @@ public class Level2 {
 
     }
 
+    private static int nextBigNumber(int n) {
+        int totalCount = get2BaseCount(n);
+        int answer = n+1;
+        while (get2BaseCount(answer) != totalCount) {
+            answer++;
+        }
+        return answer;
+    }
+
+    private static int get2BaseCount(int n) {
+        String bi = Integer.toBinaryString(n);
+        int result = 0;
+        for(int i = 0; i < bi.length(); i++) {
+            if (bi.charAt(i) == '1') {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    private static int pickingLand(int[][] land) {
+        int totalRow = land.length;
+        int answer = 0;
+
+        for (int r = 1; r < totalRow; r++) {
+            for (int c = 0; c < 4; c++) {
+                int add = land[r-1][(c+1)%4];
+                add = Math.max(add, land[r-1][(c+2)%4]);
+                add = Math.max(add, land[r-1][(c+3)%4]);
+                land[r][c] += add;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            answer = Math.max(answer, land[totalRow-1][i]);
+        }
+        return answer;
+    }
+
+    private static long superJump(int n) {
+        final int DIV = 1_234_567;
+        int[] list = new int[2001];
+
+        list[0] = 0;
+        list[1] = 1;
+        list[2] = 2;
+        for (int i = 3; i < n+1; i++) {
+            list[i] = (list[i-1] + list[i-2]) % DIV;
+        }
+        return list[n];
+    }
+
+    private static int[] numberBlock(long begin, long end) {
+        final int MAX_BLOCK = 10_000_000;
+        int[] answer = new int[(int) (end - begin)+1];
+        int idx = 0;
+
+        for (int i = (int) begin; i <= (int) end; i++) {
+            if (i != 1) {
+                int div = 1;
+                for (int j = 2; j <= Math.sqrt(i); j++) {
+                    if (i % j == 0) {
+                        div = j;
+                        if (i / div <= MAX_BLOCK) {
+                            break;
+                        }
+                    }
+                }
+                answer[idx++] = (div == 1) ? 1 : (i / div <= MAX_BLOCK) ? i / div : div;
+            } else {
+                answer[idx++] = 0;
+            }
+        }
+        return answer;
+    }
+
     private static int[] coloringBook(int m, int n, int[][] picture) {
         int[] dr = new int[]{1,-1,0,0};
         int[] dc = new int[]{0,0,1,-1};
