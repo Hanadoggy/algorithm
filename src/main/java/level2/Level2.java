@@ -13,6 +13,61 @@ public class Level2 {
 
     }
 
+    private static String kingdom124(int n) {
+        StringBuilder answer = new StringBuilder();
+
+        while (n > 0) {
+            int div = n % 3;
+            answer.insert(0, (div == 0) ? "4" : div);
+            n = (n/3) - ((div == 0) ? 1 : 0);
+        }
+        return answer.toString();
+    }
+
+    private static int line2tiling(int n) {
+        long[] answer = new long[60001];
+        final long DIV = 1_000_000_007;
+
+        answer[0] = 1;
+        answer[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            answer[i] = answer[i-1] + answer[i-2];
+            answer[i] %= DIV;
+        }
+        return (int) answer[n];
+    }
+
+    private static int line3tiling(int n) {
+        long[] answer = new long[5001];
+        final long DIV = 1_000_000_007;
+
+        answer[0] = 1;
+        for (int i = 2; i <= n; i += 2) {
+            answer[i] = answer[i-2]*3;
+            for (int j = 4; i - j >= 0; j += 2) {
+                answer[i] += (answer[i-j]*2);
+            }
+            answer[i] %= DIV;
+        }
+        return (int) answer[n];
+    }
+
+    private static int findMaxSquare(int[][] board) {
+        int clen = board[0].length;
+        int answer = board[0][0];
+
+        for (int r = 1; r < board.length; r++) {
+            for (int c = 1; c < clen; c++) {
+                if (board[r][c] > 0) {
+                    board[r][c] = Math.min(board[r-1][c],
+                            Math.min(board[r][c-1], board[r-1][c-1])) + 1;
+                    answer = Math.max(board[r][c], answer);
+                }
+            }
+        }
+        return answer*answer;
+    }
+
     private static int nextBigNumber(int n) {
         int totalCount = get2BaseCount(n);
         int answer = n+1;
