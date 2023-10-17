@@ -1,6 +1,7 @@
 package level1;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Level1 {
 
@@ -8,6 +9,117 @@ public class Level1 {
 
         // level 1
 
+    }
+
+    private static int solution(int n, int[] lost, int[] reserve) {
+        Set<Integer> lose = Arrays.stream(lost).boxed().collect(Collectors.toSet());
+        Set<Integer> save = Arrays.stream(reserve).boxed().collect(Collectors.toSet());
+        for (int num : lost) {
+            if (lose.contains(num) && save.contains(num)) {
+                lose.remove(num);
+                save.remove(num);
+            }
+        }
+        int answer = n - lose.size();
+
+        for (int num : lose) {
+            if (save.contains(num-1)) {
+                answer++;
+            } else if (save.contains(num+1)) {
+                answer++;
+                save.remove(num+1);
+            }
+        }
+        return answer;
+    }
+
+    private static int[] testScore(int[] answers) {
+        int[] stu1 = new int[]{1,2,3,4,5};
+        int[] stu2 = new int[]{2,1,2,3,2,4,2,5};
+        int[] stu3 = new int[]{3,3,1,1,2,2,4,4,5,5};
+        int[] count = new int[4];
+        List<Integer> answer = new ArrayList<>();
+
+        for (int i = 0; i < answers.length; i++) {
+            if (answers[i] == stu1[i%5]) {
+                count[1]++;
+            }
+            if (answers[i] == stu2[i%8]) {
+                count[2]++;
+            }
+            if (answers[i] == stu3[i%10]) {
+                count[3]++;
+            }
+        }
+        count[0] = Math.max(count[1], Math.max(count[2], count[3]));
+        for (int i = 1; i < 4; i++) {
+            if (count[0] == count[i]) {
+                answer.add(i);
+            }
+        }
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    /**
+     * 배열에서 일부분을 깊은복사 해야할 때는
+     * Arrays.copyOfRange(arr, startIdx, endIdx) 메서드 사용하기
+     */
+    private static int[] subArray(int[] array, int[][] commands) {
+        List<Integer> collect = Arrays.stream(array).boxed().collect(Collectors.toList());
+        int[] answer = new int[commands.length];
+        int idx = 0;
+
+        for (int[] cond : commands) {
+            List<Integer> integers = new ArrayList<>(List.copyOf(collect.subList(cond[0] - 1, cond[1])));
+            integers.sort(null);
+            answer[idx++] = integers.get(cond[2]-1);
+        }
+        return answer;
+    }
+
+    private static int[] solution(int[] arr) {
+        Deque<Integer> list = new LinkedList<>();
+
+        list.add(arr[0]);
+        for (int num : arr) {
+            if (list.getLast() != num) {
+                list.addLast(num);
+            }
+        }
+        int[] answer = new int[list.size()];
+        for (int i = 0; i < answer.length; i++) {
+            answer[i] = list.pollFirst();
+        }
+        return answer;
+    }
+
+    private static String runner(String[] participant, String[] completion) {
+        Map<String, Integer> maps = new HashMap<>();
+
+        for (String runner : participant) {
+            maps.put(runner, maps.getOrDefault(runner, 0)+1);
+        }
+        for (String runner : completion) {
+            int remain = maps.get(runner);
+            if (remain == 1) {
+                maps.remove(runner);
+            } else {
+                maps.put(runner, remain-1);
+            }
+        }
+        for (String answer : maps.keySet()) {
+            return answer;
+        }
+        return "";
+    }
+
+    private static int phonekemon(int[] nums) {
+        Set<Integer> pokemons = new HashSet<>();
+
+        for (int pokemon : nums) {
+            pokemons.add(pokemon);
+        }
+        return Math.min(pokemons.size(), (nums.length / 2));
     }
 
     private static long calcShortageMoney(int price, int money, int count) {

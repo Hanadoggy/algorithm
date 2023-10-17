@@ -10,7 +10,53 @@ public class Level2 {
     public static void main(String[] args) {
 
         // level 2
+        gameMapDistance(new int[][]{{1,0,1,1,1},{1,0,1,0,1},{1,0,1,1,1},{1,1,1,0,1},{0,0,0,0,1}});
+    }
 
+    private static int gameMapDistance(int[][] maps) {
+        int[] dr = new int[]{1,0,-1,0};
+        int[] dc = new int[]{0,1,0,-1};
+        Queue<Integer> visit = new LinkedList<>();
+        int col = maps[0].length;
+        int row = maps.length;
+        boolean[][] check = new boolean[row][col];
+
+        check[0][0] = true;
+        visit.add(0);
+        while (!visit.isEmpty()) {
+            int cur = visit.poll();
+
+            if (cur == row*col - 1) {
+                return maps[cur/col][cur%col];
+            }
+            for (int i = 0; i < 4; i++) {
+                int r = cur/col + dr[i];
+                int c = cur%col + dc[i];
+                if (r >= 0 && r < row && c >= 0 && c < col &&
+                        !check[r][c] && maps[r][c] != 0) {
+                    maps[r][c] = maps[cur/col][cur%col] + 1;
+                    visit.add(r*col + c);
+                    check[r][c] = true;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private static boolean correctBracket(String s) {
+        Stack<Character> stack = new Stack<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push('(');
+            } else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                stack.pop();
+            }
+        }
+        return stack.isEmpty();
     }
 
     private static String kingdom124(int n) {
