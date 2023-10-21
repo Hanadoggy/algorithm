@@ -1,8 +1,80 @@
 package level3;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Practice {
+
+    public int[] binaryTree(long[] numbers) {
+        int[] answer = new int[numbers.length];
+
+        for (int i = 0; i < numbers.length; i++) {
+            answer[i] = check(addZero(Long.toBinaryString(numbers[i])));
+        }
+        return answer;
+    }
+
+    private int check(String number) {
+        Queue<int[]> visit = new LinkedList<>();
+
+        visit.add(new int[]{number.length(), number.length()/2});
+        while (!visit.isEmpty()) {
+            int[] cur = visit.poll();
+            int move = Math.abs(cur[0] - cur[1]) / 2;
+
+            if (number.charAt(cur[1]) == '0' &&
+                    (number.charAt(cur[1]-move) == '1' || number.charAt(cur[1]+move) == '1')) {
+                return 0;
+            }
+            if (move >= 1) {
+                visit.add(new int[]{cur[1], cur[1]-move});
+                visit.add(new int[]{cur[1], cur[1]+move});
+            }
+        }
+        return 1;
+    }
+
+    private String addZero(String original) {
+        for (int i = 0; original.length() >= Math.pow(2, i); i++) {
+            if (original.length() < Math.pow(2, i+1)) {
+                return "0".repeat((int) Math.pow(2, i+1) - original.length() - 1) + original;
+            }
+        }
+        return original;
+    }
+
+    public int personnelReview(int[][] scores) {
+        int[] target = new int[]{scores[0][0], scores[0][1]};
+        List<int[]> list = new ArrayList<>();
+        int answer = 1;
+
+        Arrays.sort(scores,
+                Comparator.comparing((int[] i) -> -i[0])
+                        .thenComparing((int[] i) -> -i[1]));
+        for (int i = 0, top = 0, temp = 0; i < scores.length; i++) {
+            if (i == 0) {
+                temp = scores[0][1];
+            } else if (scores[i][0] < scores[i-1][0]) {
+                top = Math.max(top, temp);
+                temp = scores[i][1];
+            }
+            if (scores[i][1] >= top) {
+                list.add(scores[i]);
+            }
+        }
+        list.sort(Comparator.comparing((int[] i) -> -i[0] - i[1]));
+        for (int i = 0, temp = 0; i < list.size(); i++) {
+            if (i > 0 && list.get(i)[0] + list.get(i)[1] < list.get(i-1)[0] + list.get(i-1)[1]) {
+                answer += temp;
+                temp = 1;
+            } else {
+                temp++;
+            }
+            if (list.get(i)[0] == target[0] && list.get(i)[1] == target[1]) {
+                return answer;
+            }
+        }
+        return -1;
+    }
 
     public long continuousPurseArraySum(int[] sequence) {
         long answer = Long.MIN_VALUE;
