@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Practice {
 
-    public int[] binaryTree(long[] numbers) {
+    public int[] expressBinaryTree(long[] numbers) {
         int[] answer = new int[numbers.length];
 
         for (int i = 0; i < numbers.length; i++) {
@@ -21,11 +21,11 @@ public class Practice {
             int[] cur = visit.poll();
             int move = Math.abs(cur[0] - cur[1]) / 2;
 
-            if (number.charAt(cur[1]) == '0' &&
-                    (number.charAt(cur[1]-move) == '1' || number.charAt(cur[1]+move) == '1')) {
-                return 0;
-            }
-            if (move >= 1) {
+            if (move > 0) {
+                if (number.charAt(cur[1]) == '0' &&
+                        (number.charAt(cur[1]-move) == '1' || number.charAt(cur[1]+move) == '1')) {
+                    return 0;
+                }
                 visit.add(new int[]{cur[1], cur[1]-move});
                 visit.add(new int[]{cur[1], cur[1]+move});
             }
