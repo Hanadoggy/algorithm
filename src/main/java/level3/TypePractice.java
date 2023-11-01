@@ -4,7 +4,38 @@ import java.util.*;
 
 public class TypePractice {
 
-    public int[] solution(String[] operations) {
+    public int network(int n, int[][] computers) {
+        boolean[] visited = new boolean[n];
+        Queue<Integer> next = new LinkedList<>();
+        int answer = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && computers[i][j] == 1) {
+                    next.add(j);
+                    visited[j] = true;
+                    break;
+                }
+            }
+            while (!next.isEmpty()) {
+                int cur = next.poll();
+
+                for (int k = 0; k < n; k++) {
+                    if (!visited[k] && computers[cur][k] == 1) {
+                        next.add(k);
+                        visited[k] = true;
+                    }
+                }
+                if (next.isEmpty()) {
+                    answer++;
+                    break;
+                }
+            }
+        }
+        return answer;
+    }
+
+    public int[] DoublePriorityQueue(String[] operations) {
         PriorityQueue<Integer> asc = new PriorityQueue<>();
         PriorityQueue<Integer> desc = new PriorityQueue<>(Comparator.reverseOrder());
 
