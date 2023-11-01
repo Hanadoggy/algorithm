@@ -1,6 +1,6 @@
 package level3;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class Level3 {
 

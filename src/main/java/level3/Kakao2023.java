@@ -4,6 +4,56 @@ import java.util.*;
 
 public class Kakao2023 {
 
+    public String editTable(int n, int k, String[] cmd) {
+        NavigableSet<Integer> deleted = new TreeSet<>();
+        Deque<Integer> stack = new ArrayDeque<>(n);
+        StringBuilder answer = new StringBuilder();
+
+        for (String cond : cmd) {
+            if (cond.charAt(0) == 'D') {
+                int move = Integer.parseInt(cond.substring(2));
+
+                int skip = deleted.subSet(k, k + move).size();
+                k += move;
+                while (skip > 0) {
+                    k += skip;
+                    skip = deleted.subSet(k, k + skip).size();
+                }
+            } else if (cond.charAt(0) == 'U') {
+                int move = Integer.parseInt(cond.substring(2));
+
+                int skip = deleted.subSet(k + 1 - move, k + 1).size();
+                k -= move;
+                while (skip > 0) {
+                    k -= skip;
+                    skip = deleted.subSet(k + 1 - skip, k + 1).size();
+                }
+            } else if (cond.charAt(0) == 'C') {
+                deleted.add(k);
+                stack.addLast(k);
+                if (k == n) {
+                    k--;
+                } else {
+                    k++;
+                    while (deleted.contains(k)) {
+                        k++;
+                    }
+                }
+            } else {
+                deleted.remove(stack.pollLast());
+            }
+            System.out.println(k);
+        }
+        for (int i = 0; i < n; i++) {
+            if (deleted.contains(i)) {
+                answer.append("X");
+            } else {
+                answer.append("O");
+            }
+        }
+        return answer.toString();
+    }
+
     public String[] mergeTable(String[] commands) {
         // ??????????
         int[][] table = new int[51][51];

@@ -1,6 +1,7 @@
 package level2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HanoiTower {
     List<int[]> result = new ArrayList<>();
