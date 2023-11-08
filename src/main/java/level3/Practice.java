@@ -4,6 +4,45 @@ import java.util.*;
 
 public class Practice {
 
+    public long leftWork(int n, int[] works) {
+        Map<Integer, Integer> leftWorks = new HashMap<>();
+        long answer = 0;
+
+        for (int work : works) {
+            leftWorks.put(work, leftWorks.getOrDefault(work, 0) + 1);
+        }
+        List<Integer> times = new ArrayList<>(leftWorks.keySet());
+        times.sort(Comparator.reverseOrder());
+        for (int i = 0; i < times.size() && n > 0; i++) {
+            int currentTime = times.get(i);
+            int nextLeftTime = i == times.size() - 1 ? 0 : times.get(i + 1);
+            int minusTime = (currentTime - nextLeftTime) * leftWorks.get(currentTime);
+            if (n >= minusTime) {
+                n -= minusTime;
+                if (nextLeftTime != 0) {
+                    leftWorks.put(nextLeftTime, leftWorks.get(nextLeftTime) + leftWorks.get(currentTime));
+                    leftWorks.remove(currentTime);
+                } else {
+                    leftWorks.clear();
+                }
+            } else {
+                int currentLeft = leftWorks.get(currentTime);
+                leftWorks.remove(currentTime);
+                leftWorks.put(currentTime - (n / currentLeft), currentLeft - (n % currentLeft));
+                if (n % currentLeft != 0) {
+                    leftWorks.put(currentTime - ((n / currentLeft) + 1),
+                            leftWorks.getOrDefault(currentTime - ((n / currentLeft) + 1), 0) +
+                                    (n % currentLeft));
+                }
+                n = 0;
+            }
+        }
+        for (Integer key : leftWorks.keySet()) {
+            answer += (long) Math.pow(key, 2) * leftWorks.get(key);
+        }
+        return answer;
+    }
+
     public int[] expressBinaryTree(long[] numbers) {
         int[] answer = new int[numbers.length];
 
