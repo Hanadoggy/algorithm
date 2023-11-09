@@ -4,6 +4,22 @@ import java.util.*;
 
 public class Practice {
 
+    public int[] bestSet(int n, int s) {
+        int div = s / n;
+        int remain = s % n;
+        if (div == 0) {
+            return new int[]{-1};
+        }
+        int[] answer = new int[n];
+
+        Arrays.fill(answer, div);
+        for (int i = n - 1; i >= 0 && remain > 0; i--) {
+            remain--;
+            answer[i]++;
+        }
+        return answer;
+    }
+
     public long leftWork(int n, int[] works) {
         Map<Integer, Integer> leftWorks = new HashMap<>();
         long answer = 0;
