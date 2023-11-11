@@ -1,8 +1,51 @@
 package level3;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Practice {
+
+    public int solution(String begin, String target, String[] inputs) {
+        Set<String> words = new HashSet<>();
+        Queue<String> nextWord = new LinkedList<>();
+        Map<String, Integer> result = new HashMap<>();
+
+        for (String input : inputs) {
+            words.add(input);
+        }
+        if (!words.contains(target)) {
+            return 0;
+        }
+        nextWord.add(begin);
+        result.put(begin, 0);
+        while (!nextWord.isEmpty()) {
+            String cur = nextWord.poll();
+            for (String notVisit : Set.copyOf(words)) {
+                if (checkDiff(cur, notVisit)) {
+                    nextWord.add(notVisit);
+                    words.remove(notVisit);
+                    result.put(notVisit, result.get(cur) + 1);
+                    if (notVisit.equals(target)) {
+                        nextWord.clear();
+                        break;
+                    }
+                }
+            }
+        }
+        return result.getOrDefault(target, 0);
+    }
+
+    private boolean checkDiff(String cur, String next) {
+        for (int i = 0, diff = 0; i < cur.length(); i++) {
+            if (cur.charAt(i) != next.charAt(i)) {
+                diff++;
+            }
+            if (diff == 2) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public int[] bestSet(int n, int s) {
         int div = s / n;
