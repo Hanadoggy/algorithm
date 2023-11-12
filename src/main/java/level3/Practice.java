@@ -1,9 +1,29 @@
 package level3;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Practice {
+
+    public int wayToSchool(int m, int n, int[][] puddles) {
+        final int DIV = 1_000_000_007;
+        int[][] counts = new int[n][m];
+
+        counts[0][0] = 1;
+        for (int[] puddle : puddles) {
+            counts[puddle[1] - 1][puddle[0] - 1] = -1;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (i > 0 && counts[i][j] > -1 && counts[i - 1][j] > -1) {
+                    counts[i][j] += counts[i - 1][j] % DIV;
+                }
+                if (j > 0 && counts[i][j] > -1 && counts[i][j - 1] > -1) {
+                    counts[i][j] += counts[i][j - 1] % DIV;
+                }
+            }
+        }
+        return counts[n - 1][m - 1] % DIV;
+    }
 
     public int solution(String begin, String target, String[] inputs) {
         Set<String> words = new HashSet<>();
