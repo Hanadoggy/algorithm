@@ -4,6 +4,27 @@ import java.util.*;
 
 public class Practice {
 
+    public int numberGame(int[] A, int[] B) {
+        int teamSize = A.length;
+        Deque<Integer> scoreA = new ArrayDeque<>(teamSize);
+        Deque<Integer> scoreB = new ArrayDeque<>(teamSize);
+        int answer = 0;
+
+        Arrays.sort(A);
+        Arrays.sort(B);
+        for (int i = 0; i < teamSize; i++) {
+            scoreA.addLast(A[i]);
+            scoreB.addLast(B[i]);
+        }
+        for (int i = 0; i < teamSize; i++) {
+            if (scoreA.pollLast() < scoreB.peekLast()) {
+                answer++;
+                scoreB.pollLast();
+            }
+        }
+        return answer;
+    }
+
     public int wayToSchool(int m, int n, int[][] puddles) {
         final int DIV = 1_000_000_007;
         int[][] counts = new int[n][m];
