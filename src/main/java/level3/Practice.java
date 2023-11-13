@@ -4,6 +4,20 @@ import java.util.*;
 
 public class Practice {
 
+    public int speedCamera(int[][] routes) {
+        Arrays.sort(routes, Comparator.comparing(i -> i[1]));
+        int answer = 0;
+        int pivot = -30001;
+
+        for (int[] route : routes) {
+            if (route[0] > pivot) {
+                answer++;
+                pivot = route[1];
+            }
+        }
+        return answer;
+    }
+
     public int numberGame(int[] A, int[] B) {
         int teamSize = A.length;
         Deque<Integer> scoreA = new ArrayDeque<>(teamSize);
