@@ -4,6 +4,25 @@ import java.util.*;
 
 public class Practice {
 
+    public int setUpBaseStations(int n, int[] stations, int w) {
+        int answer = 0;
+        int cur = 1;
+        int div = (2 * w) + 1;
+
+        for (int station : stations) {
+            int distance = station - w - cur;
+            if (distance > 0) {
+                answer += (distance / div) + (distance % div > 0 ? 1 : 0);
+            }
+            cur = Math.max(cur, station + w + 1);
+        }
+        int distance = n + 1 - cur;
+        if (distance > 0) {
+            answer += (distance / div) + (distance % div > 0 ? 1 : 0);
+        }
+        return answer;
+    }
+
     public int speedCamera(int[][] routes) {
         Arrays.sort(routes, Comparator.comparing(i -> i[1]));
         int answer = 0;
