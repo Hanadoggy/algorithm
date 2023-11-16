@@ -4,6 +4,47 @@ import java.util.*;
 
 public class Practice {
 
+    public int[] bestAlbum(String[] genres, int[] plays) {
+        Map<String, Integer> genrePlays = new HashMap<>();
+        List<Album> albums = new ArrayList<>();
+        int totalSize = genres.length;
+        List<Integer> answer = new ArrayList<>();
+
+        for (int i = 0; i < totalSize; i++) {
+            albums.add(new Album(i, genres[i], plays[i]));
+            genrePlays.put(genres[i], genrePlays.getOrDefault(genres[i], 0) + plays[i]);
+        }
+        for (Album album : albums) {
+            album.totalPlay = genrePlays.get(album.genre);
+        }
+        albums.sort(Comparator.comparing((Album a) -> -a.totalPlay)
+                .thenComparing((Album a) -> -a.play)
+                .thenComparing((Album a) -> a.number));
+        for (int i = 0, count = 0; i < totalSize; i++) {
+            if (i > 0 && !albums.get(i).genre.equals(albums.get(i-1).genre)) {
+                count = 0;
+            }
+            if (count < 2) {
+                answer.add(albums.get(i).number);
+                count++;
+            }
+        }
+        return answer.stream().mapToInt(i->i).toArray();
+    }
+
+    static class Album {
+        int number;
+        String genre;
+        int play;
+        int totalPlay;
+
+        Album(int number, String genre, int play) {
+            this.number = number;
+            this.genre = genre;
+            this.play = play;
+        }
+    }
+
     public int setUpBaseStations(int n, int[] stations, int w) {
         int answer = 0;
         int cur = 1;
