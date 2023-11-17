@@ -4,6 +4,25 @@ import java.util.*;
 
 public class Practice {
 
+    public int getMaxStickers(int[] stickers) {
+        int totalSize = stickers.length;
+        int[][] dp = new int[totalSize][2];
+        int[][] dpNext = new int[totalSize][2];
+
+        if (totalSize == 1) {
+            return stickers[0];
+        }
+        dp[0][0] = Integer.MIN_VALUE;
+        dp[0][1] = stickers[0];
+        for (int i = 1; i < totalSize; i++) {
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1]);
+            dp[i][1] = dp[i-1][0] + stickers[i];
+            dpNext[i][0] = Math.max(dpNext[i-1][0], dpNext[i-1][1]);
+            dpNext[i][1] = dpNext[i-1][0] + stickers[i];
+        }
+        return Math.max(dp[totalSize-1][0], Math.max(dpNext[totalSize-1][0], dpNext[totalSize-1][1]));
+    }
+
     public int[] bestAlbum(String[] genres, int[] plays) {
         Map<String, Integer> genrePlays = new HashMap<>();
         List<Album> albums = new ArrayList<>();
