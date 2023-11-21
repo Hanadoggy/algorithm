@@ -3,6 +3,32 @@ package level3;
 import java.util.*;
 
 public class TypePractice {
+    Map<String, PriorityQueue<String>> courses = new HashMap<>();
+
+    public String[] travelCourse(String[][] tickets) {
+        for (String[] ticket : tickets) {
+            if (!courses.containsKey(ticket[0])) {
+                courses.put(ticket[0], new PriorityQueue<>());
+            }
+            courses.get(ticket[0]).offer(ticket[1]);
+        }
+        return findTravelCourse("ICN").toArray(new String[0]);
+    }
+
+    public Deque<String> findTravelCourse(String currentAirport) {
+        if (!courses.containsKey(currentAirport) || courses.get(currentAirport).isEmpty()) {
+            return new LinkedList<>(List.of(currentAirport));
+        }
+        Deque<String> totalTravelCourse = findTravelCourse(courses.get(currentAirport).poll());
+        if (!courses.get(currentAirport).isEmpty()) {
+            Deque<String> innerTravelCourse = findTravelCourse(courses.get(currentAirport).poll());
+            while (!innerTravelCourse.isEmpty()) {
+                totalTravelCourse.addFirst(innerTravelCourse.pollLast());
+            }
+        }
+        totalTravelCourse.addFirst(currentAirport);
+        return totalTravelCourse;
+    }
 
     public int connectIsland(int n, int[][] bridges) {
         PriorityQueue<int[]> visits = new PriorityQueue<>(Comparator.comparing((int[] i) -> i[2]));
