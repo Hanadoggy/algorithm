@@ -4,6 +4,40 @@ import java.util.*;
 
 public class TypePractice {
 
+    public int connectIsland(int n, int[][] bridges) {
+        PriorityQueue<int[]> visits = new PriorityQueue<>(Comparator.comparing((int[] i) -> i[2]));
+        int[][] links = new int[n][n];
+        Set<Integer> group = new HashSet<>();
+        int answer = 0;
+
+        for (int[] bridge : bridges) {
+            links[bridge[0]][bridge[1]] = bridge[2];
+            links[bridge[1]][bridge[0]] = bridge[2];
+        }
+        for (int i = 0; i < n; i++) {
+            if (links[0][i] > 0) {
+                visits.add(new int[]{0, i, links[0][i]});
+            }
+        }
+        group.add(0);
+        while (!visits.isEmpty()) {
+            int[] cur = visits.poll();
+            for (int i = 0; i < n; i++) {
+                if (links[cur[1]][i] > 0 && !group.contains(i)) {
+                    visits.add(new int[]{cur[1], i, links[cur[1]][i]});
+                }
+            }
+            if (!group.contains(cur[1])) {
+                group.add(cur[1]);
+                answer += cur[2];
+                if (group.size() == n) {
+                    return answer;
+                }
+            }
+        }
+        return answer;
+    }
+
     public int furthestNode(int n, int[][] edges) {
         Queue<Integer> nextNodes = new LinkedList<>();
         Node[] nodes = new Node[n + 1];
