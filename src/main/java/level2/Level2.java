@@ -14,6 +14,57 @@ public class Level2 {
         gameMapDistance(new int[][]{{1,0,1,1,1},{1,0,1,0,1},{1,0,1,1,1},{1,1,1,0,1},{0,0,0,0,1}});
     }
 
+    public int getOils(int[][] land) {
+        int rowSize = land.length;
+        int colSize = land[0].length;
+        int[][] visited = new int[rowSize][colSize];
+        int[][] dir = new int[][]{{1,0}, {-1,0}, {0,1}, {0,-1}};
+        List<Integer> sizes = new ArrayList<>();
+        Deque<int[]> nexts = new ArrayDeque<>();
+        int answer = 0;
+
+        sizes.add(0);
+        for (int r = 0; r < rowSize; r++) {
+            for (int c = 0; c < colSize; c++) {
+                int index = sizes.size();
+                int counts = 0;
+                if (land[r][c] == 1 && visited[r][c] == 0) {
+                    nexts.addLast(new int[]{r, c});
+                    visited[r][c] = index;
+                }
+                while (!nexts.isEmpty()) {
+                    int[] cur = nexts.pollFirst();
+                    for (int i = 0; i < 4; i++) {
+                        int row = cur[0] + dir[i][0];
+                        int col = cur[1] + dir[i][1];
+                        if (row >= 0 && row < rowSize && col >= 0 && col < colSize &&
+                                visited[row][col] == 0 && land[row][col] == 1) {
+                            visited[row][col] = index;
+                            nexts.addLast(new int[]{row, col});
+                        }
+                    }
+                    counts++;
+                }
+                if (counts > 0) {
+                    sizes.add(counts);
+                }
+            }
+        }
+
+        for (int c = 0; c < colSize; c++) {
+            boolean[] counted = new boolean[sizes.size()];
+            int result = 0;
+            for (int r = 0; r < rowSize; r++) {
+                if (land[r][c] == 1 && !counted[visited[r][c]]) {
+                    result += sizes.get(visited[r][c]);
+                    counted[visited[r][c]] = true;
+                }
+            }
+            answer = Math.max(answer, result);
+        }
+        return answer;
+    }
+
     private static int gameMapDistance(int[][] maps) {
         int[] dr = new int[]{1,0,-1,0};
         int[] dc = new int[]{0,1,0,-1};
