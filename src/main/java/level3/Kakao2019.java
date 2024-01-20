@@ -6,6 +6,25 @@ public class Kakao2019 {
     Map<String, Set<String>> matching = new HashMap<>();
     Set<String> answer = new HashSet<>();
 
+    public int jumpSteppingStone(int[] stones, int k) {
+        PriorityQueue<Integer> steps = new PriorityQueue<>(Comparator.reverseOrder());
+        List<Integer> counts = new ArrayList<>();
+        int answer = Integer.MAX_VALUE;
+
+        for (int i = 0; i < k; i++) {
+            steps.add(stones[i]);
+        }
+        for (int i = k; i < stones.length; i++) {
+            counts.add(steps.peek());
+            steps.remove(stones[i - k]);
+            steps.add(stones[i]);
+        }
+        for (int count : counts) {
+            answer = Math.min(answer, count);
+        }
+        return answer;
+    }
+
     public int solution(String[] users, String[] bans) {
         for (String user : users) {
             for (String ban : bans) {
